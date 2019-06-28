@@ -7,9 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        tools:context=".ui.MainActivity"
-        tools:ignore="MergeRootFrame"
-        tools:openDrawer="start">
+        tools:context=".ui.MainActivity">
 
         <androidx.drawerlayout.widget.DrawerLayout xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/drawer_layout"
