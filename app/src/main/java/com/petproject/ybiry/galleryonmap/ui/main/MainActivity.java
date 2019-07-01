@@ -1,35 +1,29 @@
-package com.petproject.ybiry.galleryonmap.ui;
+package com.petproject.ybiry.galleryonmap.ui.main;
 
 import android.os.Bundle;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
-import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-
-import android.view.MenuItem;
-
-import com.google.android.material.navigation.NavigationView;
-import com.petproject.ybiry.galleryonmap.R;
-import com.petproject.ybiry.galleryonmap.ui.main.MainFragment;
-
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
+import com.petproject.ybiry.galleryonmap.R;
+import com.petproject.ybiry.galleryonmap.arch.BaseActivity;
 
-import android.view.Menu;
-
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -53,6 +47,11 @@ public class MainActivity extends AppCompatActivity
                     .add(R.id.container, new MainFragment(),"main_fragment")
                     .commit();
         }
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_main;
     }
 
     @Override
