@@ -6,7 +6,7 @@
 
         <variable
             name="main"
-            type="com.petproject.ybiry.galleryonmap.data.main.model.MainData" />
+            type="com.petproject.ybiry.galleryonmap.data.model.MainActivityModel" />
 
     </data>
 

@@ -5,7 +5,7 @@
 
         <variable
             name="map"
-            type="com.petproject.ybiry.galleryonmap.data.locate.model.Map" />
+            type="com.petproject.ybiry.galleryonmap.data.model.MainFragmentModel" />
 
     </data>
 
