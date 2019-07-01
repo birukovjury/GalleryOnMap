@@ -3,20 +3,18 @@ package com.petproject.ybiry.galleryonmap.ui.main;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 import com.petproject.ybiry.galleryonmap.R;
 import com.petproject.ybiry.galleryonmap.arch.BaseActivity;
+import com.petproject.ybiry.galleryonmap.databinding.ActivityMainBinding;
 
-public class MainActivity extends BaseActivity
+public class MainActivity extends BaseActivity<ActivityMainBinding>
         implements NavigationView.OnNavigationItemSelectedListener {
 
     @Override
@@ -26,14 +24,7 @@ public class MainActivity extends BaseActivity
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -44,7 +35,7 @@ public class MainActivity extends BaseActivity
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new MainFragment(),"main_fragment")
+                    .add(R.id.container, new MainFragment(), "main_fragment")
                     .commit();
         }
     }
