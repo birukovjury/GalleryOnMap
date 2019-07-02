@@ -20,22 +20,19 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private SupportMapFragment mMapFragment;
+    private static final String TAG = "MainFragment";
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-    }
 
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mMapFragment = (SupportMapFragment) requireActivity().getSupportFragmentManager().findFragmentById(R.id.map);
-        if (mMapFragment != null) {
-            mMapFragment.getMapAsync(this);
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
+                .findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
         }
     }
+
 
     @Override
     protected int getLayoutId() {
@@ -55,8 +52,6 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        // Add a marker in Sydney, Australia, and move the camera.
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
