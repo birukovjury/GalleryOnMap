@@ -1,6 +1,5 @@
 package com.petproject.ybiry.galleryonmap.ui.main;
 
-import android.Manifest;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,7 +23,7 @@ import com.petproject.ybiry.galleryonmap.arch.BaseViewModelFragment;
 import com.petproject.ybiry.galleryonmap.data.model.Photo;
 import com.petproject.ybiry.galleryonmap.databinding.FragmentMainBinding;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, MainFragmentViewModel>
@@ -107,9 +106,9 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     }
 
     private void observeNewPhotos() {
-        getViewModel().getPhotos().observe(this, new Observer<ArrayList<Photo>>() {
+        getViewModel().getPhotos().observe(this, new Observer<List<Photo>>() {
             @Override
-            public void onChanged(ArrayList<Photo> photos) {
+            public void onChanged(List<Photo> photos) {
                 Log.e(TAG, "New photo received");
                 setMarkers(photos);
                 //TODO
@@ -128,20 +127,16 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
             @Override
             public void onChanged(String requiredPermission) {
                 Log.e(TAG, "Permission request received: " + requiredPermission);
-                if (Manifest.permission.ACCESS_FINE_LOCATION.equals(requiredPermission))
-                    requestLocationAccess();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && requiredPermission != null) {
+                    ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()), new String[]{requiredPermission},
+                            0);
+                }
             }
         });
     }
 
-    private void requestLocationAccess() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()), new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
-                    0);
-        }
-    }
 
-    private void setMarkers(ArrayList<Photo> photos) {
+    private void setMarkers(List<Photo> photos) {
         if (photos != null) {
             for (int i = 0; i < photos.size(); i++) {
                 LatLng sydney = new LatLng(photos.get(i).getLatitude(), photos.get(i).getLongitude());

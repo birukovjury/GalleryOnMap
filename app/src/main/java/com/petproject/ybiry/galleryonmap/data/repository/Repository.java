@@ -3,14 +3,15 @@ package com.petproject.ybiry.galleryonmap.data.repository;
 import com.petproject.ybiry.galleryonmap.data.model.Photo;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.Single;
 
 public interface Repository {
 
-    Single<ArrayList<Photo>> getPhotos();
+    Single<List<Photo>> getPhotos();
 
-    Single<ArrayList<Photo>> getCoordinates(ArrayList<Photo> photos);
+    Single<List<Photo>> getCoordinates(ArrayList<Photo> photos);
 
 
 }

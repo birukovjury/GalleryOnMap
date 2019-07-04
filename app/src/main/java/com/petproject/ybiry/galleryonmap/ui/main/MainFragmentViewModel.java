@@ -27,6 +27,7 @@ import com.petproject.ybiry.galleryonmap.data.repository.Repository;
 import com.petproject.ybiry.galleryonmap.data.repository.RepositoryImpl;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -41,7 +42,7 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
 
     private static final String CLASS_TAG = "MainFrViewModel";
 
-    private MutableLiveData<ArrayList<Photo>> mListOfPhotosLiveData;
+    private MutableLiveData<List<Photo>> mListOfPhotosLiveData;
     private MutableLiveData<String> mToastLiveData;
     private MutableLiveData<String> mRequestPermissionLiveData;
 
@@ -55,7 +56,7 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
 
     public void init() {
         if (mListOfPhotosLiveData == null)
-            mListOfPhotosLiveData = new MutableLiveData<ArrayList<Photo>>();
+            mListOfPhotosLiveData = new MutableLiveData<List<Photo>>();
 
         if (mToastLiveData == null)
             mToastLiveData = new MutableLiveData<String>();
@@ -68,7 +69,13 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
 
         mLocationManager = (LocationManager) getApplication().getSystemService(Context.LOCATION_SERVICE);
         mLocationListener = initLocationListener();
+
         subscribeLocationService();
+
+        if (!isExternalStorageGranted(getApplication().getApplicationContext())) {
+            requestExternalStorageReadPermissions();
+        }
+
     }
 
     public void getInitialData() {
@@ -86,13 +93,13 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
                         setLoading(false);
                     }
                 })
-                .subscribe(new SingleObserver<ArrayList<Photo>>() {
+                .subscribe(new SingleObserver<List<Photo>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                     }
 
                     @Override
-                    public void onSuccess(ArrayList<Photo> photos) {
+                    public void onSuccess(List<Photo> photos) {
                         Log.v(CLASS_TAG, "GetPhotos onSuccess");
                         mListOfPhotosLiveData.setValue(photos);
                     }
@@ -104,6 +111,7 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
                     }
                 });
     }
+
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     void connect() {
@@ -119,7 +127,7 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
     @SuppressLint("MissingPermission")
     private void subscribeLocationService() {
         Log.e(CLASS_TAG, "Try to subscribe....");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (isAboveMarshmallow()) {
             if (isLocationGranted(getApplication().getApplicationContext())) {
                 Log.d(CLASS_TAG, "FINE_LOCATION is already given");
                 if (mLocationListener != null) {
@@ -134,14 +142,32 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
                 }
             } else {
                 Log.e(CLASS_TAG, "FINE_LOCATION isn't given yet. Sending request.");
-                mRequestPermissionLiveData.postValue(Manifest.permission.ACCESS_FINE_LOCATION);
+                requestLocationPermissions();
             }
         }
+    }
+
+    private void requestLocationPermissions() {
+        mRequestPermissionLiveData.postValue(Manifest.permission.ACCESS_FINE_LOCATION);
+    }
+
+    private void requestExternalStorageReadPermissions() {
+        mRequestPermissionLiveData.postValue(Manifest.permission.READ_EXTERNAL_STORAGE);
+    }
+
+    private boolean isAboveMarshmallow() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
     }
 
     private boolean isLocationGranted(Context context) {
         return ContextCompat.checkSelfPermission(context,
                 Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private boolean isExternalStorageGranted(Context context) {
+        return ContextCompat.checkSelfPermission(context,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED;
     }
 
@@ -201,7 +227,7 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
         }
     }
 
-    public LiveData<ArrayList<Photo>> getPhotos() {
+    public LiveData<List<Photo>> getPhotos() {
         return mListOfPhotosLiveData;
     }
 
@@ -213,6 +239,4 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
     public LiveData<String> getRequestPermissions() {
         return mRequestPermissionLiveData;
     }
-
-
 }
