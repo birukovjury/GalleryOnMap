@@ -1,6 +1,8 @@
 package com.petproject.ybiry.galleryonmap.data.repository;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import com.petproject.ybiry.galleryonmap.data.model.Photo;
@@ -31,8 +33,15 @@ public class RepositoryImpl implements Repository {
             @Override
             public void subscribe(final SingleEmitter<ArrayList<Photo>> emitter) throws Exception {
                 //TODO
-                emitter.onSuccess(new ArrayList<Photo>());
-              //  emitter.onError(new Exception("lol"));
+                
+
+                Thread.sleep(3000);
+                ArrayList<Photo> photos = new ArrayList<Photo>();
+                photos.add(new Photo(55.0649, 82.8674));
+                photos.add(new Photo(51.0649, 81.8674));
+                photos.add(new Photo(45.0649, 33.8674));
+                emitter.onSuccess(photos);
+                //  emitter.onError(new Exception("lol"));
             }
         });
     }
@@ -44,7 +53,7 @@ public class RepositoryImpl implements Repository {
             public void subscribe(final SingleEmitter<ArrayList<Photo>> emitter) throws Exception {
                 //TODO
                 emitter.onSuccess(new ArrayList<Photo>());
-             //   emitter.onError(new Exception("lol"));
+                //   emitter.onError(new Exception("lol"));
             }
         });
     }

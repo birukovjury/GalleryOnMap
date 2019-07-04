@@ -48,9 +48,6 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initDependencies();
-        if (savedInstanceState == null) {
-            getViewModel().getInitialData();
-        }
     }
 
     @Override
@@ -82,12 +79,21 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
             @Override
             public void onChanged(Boolean isLoading) {
                 Log.e(TAG, "Progress state received: " + isLoading);
-                if (isLoading)
-                    getBinding().progressBar.setVisibility(View.VISIBLE);
-                else
-                    getBinding().progressBar.setVisibility(View.INVISIBLE);
+                setLoadingState(isLoading);
             }
         });
+    }
+
+    private void setLoadingState(boolean state) {
+        if (state) {
+            getBinding().progressBar.setVisibility(View.VISIBLE);
+            getBinding().backView.setVisibility(View.VISIBLE);
+
+        } else {
+            getBinding().progressBar.setVisibility(View.GONE);
+            getBinding().backView.setVisibility(View.GONE);
+        }
+        mMap.getUiSettings().setAllGesturesEnabled(!state);
     }
 
     private void observeForToast() {
@@ -105,7 +111,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
             @Override
             public void onChanged(ArrayList<Photo> photos) {
                 Log.e(TAG, "New photo received");
-
+                setMarkers(photos);
                 //TODO
                 // getBinding().setCityWeatherDayImpl(cityWeatherDay);
             }
@@ -135,11 +141,19 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         }
     }
 
+    private void setMarkers(ArrayList<Photo> photos) {
+        if (photos != null) {
+            for (int i = 0; i < photos.size(); i++) {
+                LatLng sydney = new LatLng(photos.get(i).getLatitude(), photos.get(i).getLongitude());
+                mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            }
+        }
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        getViewModel().getInitialData();
     }
 }

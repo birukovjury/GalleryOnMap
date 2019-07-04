@@ -3,18 +3,29 @@ package com.petproject.ybiry.galleryonmap.data.model;
 public class Photo {
 
     private String path;
-    private String latitude;
-    private String longitude;
+    private double latitude = 55.0649;
+    private double longitude = 82.8674;
+
+    public Photo(double latitude, double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public Photo(String path, double latitude, double longitude) {
+        this.path = path;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 
     public String getURL() {
         return path;
     }
 
-    public String getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public String getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
@@ -22,11 +33,11 @@ public class Photo {
         this.path = path;
     }
 
-    public void setLatitude(String latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public void setLongitude(String longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 }
