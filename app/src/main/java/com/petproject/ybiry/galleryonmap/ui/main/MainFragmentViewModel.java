@@ -1,6 +1,7 @@
 package com.petproject.ybiry.galleryonmap.ui.main;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -21,7 +22,11 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.OnLifecycleEvent;
 
 import com.petproject.ybiry.galleryonmap.arch.BaseViewModel;
-import com.petproject.ybiry.galleryonmap.data.model.MainFragmentModel;
+import com.petproject.ybiry.galleryonmap.data.model.Photo;
+import com.petproject.ybiry.galleryonmap.data.repository.Repository;
+import com.petproject.ybiry.galleryonmap.data.repository.RepositoryImpl;
+
+import java.util.ArrayList;
 
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -36,11 +41,11 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
 
     private static final String CLASS_TAG = "MainFrViewModel";
 
-    private MutableLiveData<MainFragmentModel> mListOfPhotosLiveData;
+    private MutableLiveData<ArrayList<Photo>> mListOfPhotosLiveData;
     private MutableLiveData<String> mToastLiveData;
     private MutableLiveData<String> mRequestPermissionLiveData;
 
-    //private Repository mRepo;
+    private Repository mRepo;
     private LocationManager mLocationManager;
     private LocationListener mLocationListener;
 
@@ -48,9 +53,9 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
         super(application);
     }
 
-    public void init( ) {
+    public void init() {
         if (mListOfPhotosLiveData == null)
-            mListOfPhotosLiveData = new MutableLiveData<MainFragmentModel>();
+            mListOfPhotosLiveData = new MutableLiveData<ArrayList<Photo>>();
 
         if (mToastLiveData == null)
             mToastLiveData = new MutableLiveData<String>();
@@ -58,8 +63,8 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
         if (mRequestPermissionLiveData == null)
             mRequestPermissionLiveData = new MutableLiveData<String>();
 
-     //   if (mRepo == null)
-     //       mRepo = new RepositoryImpl(getApplication().getApplicationContext());
+        if (mRepo == null)
+            mRepo = new RepositoryImpl(getApplication().getApplicationContext());
 
         mLocationManager = (LocationManager) getApplication().getSystemService(Context.LOCATION_SERVICE);
         mLocationListener = initLocationListener();
@@ -67,7 +72,7 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
     }
 
     public void getInitialData() {
-      /*  mRepo.getData().subscribeOn(Schedulers.io())
+        mRepo.getPhotos().subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
@@ -81,23 +86,23 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
                         setLoading(false);
                     }
                 })
-                .subscribe(new SingleObserver<MainFragmentModel>() {
+                .subscribe(new SingleObserver<ArrayList<Photo>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                     }
 
                     @Override
-                    public void onSuccess(MainFragmentModel weather) {
-                        Log.v(CLASS_TAG, "Received: getData onSuccess");
-                        mListOfPhotosLiveData.setValue(weather);
+                    public void onSuccess(ArrayList<Photo> photos) {
+                        Log.v(CLASS_TAG, "GetPhotos onSuccess");
+                        mListOfPhotosLiveData.setValue(photos);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e(CLASS_TAG, "Received: getData onError");
+                        Log.e(CLASS_TAG, "GetPhotos onError");
                         mListOfPhotosLiveData.setValue(null);
                     }
-                });*/
+                });
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
@@ -111,23 +116,33 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
         unsubscribeLocationService();
     }
 
+    @SuppressLint("MissingPermission")
     private void subscribeLocationService() {
-        String locationPermission = Manifest.permission.ACCESS_FINE_LOCATION;
         Log.e(CLASS_TAG, "Try to subscribe....");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(getApplication(), locationPermission) == PackageManager.PERMISSION_GRANTED) {
-                Log.d(CLASS_TAG, "Geo Permission OK. Service subscribed");
+            if (isLocationGranted(getApplication().getApplicationContext())) {
+                Log.d(CLASS_TAG, "FINE_LOCATION is already given");
                 if (mLocationListener != null) {
                     Criteria criteria = new Criteria();
                     criteria.setAccuracy(Criteria.ACCURACY_FINE);
-                    mLocationManager.requestLocationUpdates(mLocationManager.getBestProvider(criteria, true), 1000, 1f, mLocationListener);
-                    Log.e(CLASS_TAG, "mLocationListener subscribed");
+                    mLocationManager.requestLocationUpdates(mLocationManager.getBestProvider(criteria, true),
+                            1000,
+                            1f,
+                            mLocationListener);
+
+                    Log.e(CLASS_TAG, "Location Listener subscribed");
                 }
             } else {
-                Log.e(CLASS_TAG, "Geolocation Permission ERROR");
-                mRequestPermissionLiveData.postValue(locationPermission);
+                Log.e(CLASS_TAG, "FINE_LOCATION isn't given yet. Sending request.");
+                mRequestPermissionLiveData.postValue(Manifest.permission.ACCESS_FINE_LOCATION);
             }
         }
+    }
+
+    private boolean isLocationGranted(Context context) {
+        return ContextCompat.checkSelfPermission(context,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED;
     }
 
     private LocationListener initLocationListener() {
@@ -137,7 +152,7 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
                 @Override
                 public void onNext(String city) {
                     Log.v(CLASS_TAG, "Received new decoded location from Repo: " + city);
-                 //  citySelected(city);
+                    //  citySelected(city);
                     unsubscribeLocationService();
                     disposables.clear();
                 }
@@ -156,9 +171,9 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
             @Override
             public void onLocationChanged(Location location) {
                 disposables.add(decodeListener);
-             //   mRepo.geocode(location).subscribeOn(Schedulers.io())
-              //          .observeOn(AndroidSchedulers.mainThread())
-              //          .subscribe(decodeListener);
+                //   mRepo.geocode(location).subscribeOn(Schedulers.io())
+                //          .observeOn(AndroidSchedulers.mainThread())
+                //          .subscribe(decodeListener);
             }
 
             @Override
@@ -186,7 +201,7 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
         }
     }
 
-    public LiveData<MainFragmentModel> getFreshWeather() {
+    public LiveData<ArrayList<Photo>> getPhotos() {
         return mListOfPhotosLiveData;
     }
 
@@ -198,8 +213,6 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
     public LiveData<String> getRequestPermissions() {
         return mRequestPermissionLiveData;
     }
-
-
 
 
 }

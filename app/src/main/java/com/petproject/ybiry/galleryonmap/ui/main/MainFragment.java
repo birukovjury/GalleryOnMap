@@ -21,8 +21,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.petproject.ybiry.galleryonmap.R;
 import com.petproject.ybiry.galleryonmap.arch.BaseViewModelFragment;
+import com.petproject.ybiry.galleryonmap.data.model.Photo;
 import com.petproject.ybiry.galleryonmap.databinding.FragmentMainBinding;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, MainFragmentViewModel>
@@ -45,11 +47,10 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         initDependencies();
-        // if (savedInstanceState == null) {
-        //      getViewModel().getInitialData();
-        //  }
+        if (savedInstanceState == null) {
+            getViewModel().getInitialData();
+        }
     }
 
     @Override
@@ -68,6 +69,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         observeForPermissionRequest();
         observeLoadingState();
         observeForToast();
+        observeNewPhotos();
     }
 
     private void initDependencies() {
@@ -79,7 +81,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         getViewModel().isLoading().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean isLoading) {
-                Log.e(TAG, "----------state " + isLoading);
+                Log.e(TAG, "Progress state received: " + isLoading);
                 if (isLoading)
                     getBinding().progressBar.setVisibility(View.VISIBLE);
                 else
@@ -92,8 +94,20 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         getViewModel().getToast().observe(this, new Observer<String>() {
             @Override
             public void onChanged(String message) {
-                Log.e(TAG, "----------Message =  " + message);
+                Log.e(TAG, "Toast received: " + message);
                 showToast(message);
+            }
+        });
+    }
+
+    private void observeNewPhotos() {
+        getViewModel().getPhotos().observe(this, new Observer<ArrayList<Photo>>() {
+            @Override
+            public void onChanged(ArrayList<Photo> photos) {
+                Log.e(TAG, "New photo received");
+
+                //TODO
+                // getBinding().setCityWeatherDayImpl(cityWeatherDay);
             }
         });
     }
@@ -107,7 +121,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         getViewModel().getRequestPermissions().observe(this, new Observer<String>() {
             @Override
             public void onChanged(String requiredPermission) {
-                Log.e(TAG, "----------permission =  " + requiredPermission);
+                Log.e(TAG, "Permission request received: " + requiredPermission);
                 if (Manifest.permission.ACCESS_FINE_LOCATION.equals(requiredPermission))
                     requestLocationAccess();
             }
