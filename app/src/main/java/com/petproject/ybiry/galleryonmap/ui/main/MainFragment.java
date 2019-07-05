@@ -139,7 +139,10 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     private void setMarkers(List<Photo> photos) {
         if (photos != null) {
             for (int i = 0; i < photos.size(); i++) {
-                LatLng sydney = new LatLng(photos.get(i).getLatitude(), photos.get(i).getLongitude());
+                double lat = photos.get(i).getLatlong()[0];
+                double lon = photos.get(i).getLatlong()[1];
+
+                LatLng sydney = new LatLng(lat, lon);
                 mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
             }

@@ -6,6 +6,13 @@ public class Photo {
     private double latitude = 55.0649;
     private double longitude = 82.8674;
 
+    private float[] latlong = new float[2];
+
+    public Photo(String path, float[] latlong) {
+        this.path = path;
+        this.latlong = latlong;
+    }
+
     public Photo(double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
@@ -39,5 +46,13 @@ public class Photo {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public float[] getLatlong() {
+        return latlong;
+    }
+
+    public void setLatlong(float[] latlong) {
+        this.latlong = latlong;
     }
 }

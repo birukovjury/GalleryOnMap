@@ -2,19 +2,15 @@ package com.petproject.ybiry.galleryonmap.data.repository;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.media.Image;
-import android.media.ImageReader;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 
-import androidx.exifinterface.media.ExifInterface;
 
 import com.petproject.ybiry.galleryonmap.data.model.Photo;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -80,15 +76,12 @@ public class RepositoryImpl implements Repository {
                         null, // The arguments for the filter-query
                         MediaStore.Images.Media.DATE_ADDED + " DESC" // Order the results, newest first
                 );
-        boolean b;
         if (cursor != null) {
             result = new ArrayList<Photo>(cursor.getCount());
             if (cursor.moveToFirst()) {
                 final int image_path_col = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
                 do {
-                    result.add(new Photo(cursor.getString(image_path_col), 55.0649, 82.8674));
-                    double[] latlong = hasLatLngData(cursor.getString(image_path_col));
-                    Log.d(CLASS_TAG, "Lat exist: " + Arrays.toString(latlong));
+                    result.add(new Photo(cursor.getString(image_path_col), getLatLngData(cursor.getString(image_path_col))));
                 } while (cursor.moveToNext());
             }
             cursor.close();
@@ -96,7 +89,7 @@ public class RepositoryImpl implements Repository {
         return result;
     }
 
-    private double[] hasLatLngData(String path) {
+    private float[] getLatLngData(String path) {
         ExifInterface exif = null;
 
         try {
@@ -108,10 +101,10 @@ public class RepositoryImpl implements Repository {
             Log.d(CLASS_TAG, "exif = null");
         }
 
-        double[] latlng = new double[2];
+        float[] latlng = new float[2];
         if (exif != null) {
-            latlng = exif.getLatLong();
-            Log.d(CLASS_TAG, "result =  " + Arrays.toString(latlng) + Arrays.toString(exif.getThumbnail()));
+            boolean b = exif.getLatLong(latlng);
+            Log.d(CLASS_TAG, "result =  " + Arrays.toString(latlng));
         }
         return latlng;
     }
