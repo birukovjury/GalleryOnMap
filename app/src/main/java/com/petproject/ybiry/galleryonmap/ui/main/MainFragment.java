@@ -30,6 +30,8 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private final static double DEFAULT_LAT = 0.0;
+    private final static double DEFAULT_LON = 0.0;
     private static final String TAG = "MainFragment";
 
     @Override
@@ -137,15 +139,21 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
 
 
     private void setMarkers(List<Photo> photos) {
+
         if (photos != null) {
+            LatLng position = new LatLng(DEFAULT_LAT, DEFAULT_LAT);
             for (int i = 0; i < photos.size(); i++) {
+
                 double lat = photos.get(i).getLatlong()[0];
                 double lon = photos.get(i).getLatlong()[1];
 
-                LatLng sydney = new LatLng(lat, lon);
-                mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+                if (lat > 0 && lon > 0) {
+                    position = new LatLng(lat, lon);
+                    mMap.addMarker(new MarkerOptions().position(position).title("Photo №" + i));
+
+                } else Log.e(TAG, "no coordinates");
             }
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
         }
     }
 
