@@ -30,8 +30,6 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private final static double DEFAULT_LAT = 0.0;
-    private final static double DEFAULT_LON = 0.0;
     private static final String TAG = "MainFragment";
 
     @Override
@@ -112,9 +110,10 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
             @Override
             public void onChanged(List<Photo> photos) {
                 Log.e(TAG, "New photo received");
-                setMarkers(photos);
-                //TODO
-                // getBinding().setCityWeatherDayImpl(cityWeatherDay);
+                if (photos != null) setMarkers(photos);
+                else {
+                    showToast("Something went wrong");
+                }
             }
         });
     }
@@ -139,22 +138,15 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
 
 
     private void setMarkers(List<Photo> photos) {
-
-        if (photos != null) {
-            LatLng position = new LatLng(DEFAULT_LAT, DEFAULT_LAT);
-            for (int i = 0; i < photos.size(); i++) {
-
-                double lat = photos.get(i).getLatlong()[0];
-                double lon = photos.get(i).getLatlong()[1];
-
-                if (lat > 0 && lon > 0) {
-                    position = new LatLng(lat, lon);
-                    mMap.addMarker(new MarkerOptions().position(position).title("Photo №" + i));
-
-                } else Log.e(TAG, "no coordinates");
-            }
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+        LatLng position;
+        int i = photos.size() - 1;
+        do {
+            position = new LatLng(photos.get(i).getLatitude(), photos.get(i).getLongitude());
+            mMap.addMarker(new MarkerOptions().position(position).title("Photo №" + i));
+            i--;
         }
+        while (0 <= i);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
     }
 
     @Override

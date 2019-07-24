@@ -26,7 +26,6 @@ import com.petproject.ybiry.galleryonmap.data.model.Photo;
 import com.petproject.ybiry.galleryonmap.data.repository.Repository;
 import com.petproject.ybiry.galleryonmap.data.repository.RepositoryImpl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.SingleObserver;
@@ -78,7 +77,7 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
 
     }
 
-    public void getInitialData() {
+    void getInitialData() {
         mRepo.getPhotos().subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(new Consumer<Disposable>() {
@@ -197,9 +196,6 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
             @Override
             public void onLocationChanged(Location location) {
                 disposables.add(decodeListener);
-                //   mRepo.geocode(location).subscribeOn(Schedulers.io())
-                //          .observeOn(AndroidSchedulers.mainThread())
-                //          .subscribe(decodeListener);
             }
 
             @Override
@@ -227,16 +223,16 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
         }
     }
 
-    public LiveData<List<Photo>> getPhotos() {
+    LiveData<List<Photo>> getPhotos() {
         return mListOfPhotosLiveData;
     }
 
 
-    public LiveData<String> getToast() {
+    LiveData<String> getToast() {
         return mToastLiveData;
     }
 
-    public LiveData<String> getRequestPermissions() {
+    LiveData<String> getRequestPermissions() {
         return mRequestPermissionLiveData;
     }
 }
