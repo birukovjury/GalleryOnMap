@@ -33,7 +33,7 @@ public class RepositoryImpl implements Repository {
             @Override
             public void subscribe(final SingleEmitter<List<Photo>> emitter) throws Exception {
                 try {
-                   // Thread.sleep(1000);
+                    // Thread.sleep(1000);
                     List<Photo> photos = getImagePaths(mAppContext);
                     if (photos != null) {
                         emitter.onSuccess(photos);
@@ -50,7 +50,7 @@ public class RepositoryImpl implements Repository {
 
     private List<Photo> getImagePaths(Context context) {
         String[] columns = {MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_ADDED};
-        List<Photo> result = null;
+        List<Photo> photos = null;
         Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         String where = MediaStore.Images.Media.MIME_TYPE + "='image/jpeg'" + " OR " + MediaStore.Images.Media.MIME_TYPE + "='image/jpg'";
 
@@ -61,22 +61,23 @@ public class RepositoryImpl implements Repository {
                 MediaStore.Images.Media.DATE_ADDED + " DESC");
 
         if (cursor != null) {
-            result = new ArrayList<Photo>(cursor.getCount());
+            photos = new ArrayList<Photo>(cursor.getCount());
             if (cursor.moveToFirst()) {
+                float[] latlng;
                 final int image_path_col = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
                 do {
-                    float[] latlng = getLatLngData(cursor.getString(image_path_col));
+                    latlng = getLatLngData(cursor.getString(image_path_col));
                     if (latlng != null)
-                        result.add(new Photo(cursor.getString(image_path_col), latlng[0], latlng[1]));
+                        photos.add(new Photo(cursor.getString(image_path_col), latlng[0], latlng[1]));
                 } while (cursor.moveToNext());
             }
             cursor.close();
         }
-        return result;
+        return photos;
     }
 
     private float[] getLatLngData(String fullPath) {
-        ExifInterface exif = null;
+        ExifInterface exif;
         try {
             exif = new ExifInterface(fullPath);
 
