@@ -16,6 +16,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterManager;
 import com.petproject.ybiry.galleryonmap.R;
 import com.petproject.ybiry.galleryonmap.arch.BaseViewModelFragment;
@@ -145,7 +146,12 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         for (int i = 0; i < photos.size(); i++) {
             mClusterManager.addItem(photos.get(i));
         }
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(photos.get(0).getPosition()));
+        moveToCurrentLocation(photos.get(0).getPosition());
+    }
+
+    private void moveToCurrentLocation(LatLng currentLocation) {
+        getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 6));
+        getMap().animateCamera(CameraUpdateFactory.zoomTo(11), 1000, null);
     }
 
     @Override
