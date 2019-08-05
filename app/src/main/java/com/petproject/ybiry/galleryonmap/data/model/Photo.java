@@ -1,26 +1,31 @@
 package com.petproject.ybiry.galleryonmap.data.model;
 
-public class Photo {
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterItem;
+
+public class Photo implements ClusterItem {
 
     private String path;
-    private double latitude = 55.0649;
-    private double longitude = 82.8674;
+    private final LatLng position;
 
 
     public Photo(String path, double latitude, double longitude) {
         this.path = path;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        position = new LatLng(latitude, longitude);
     }
 
-
-    public double getLatitude() {
-        return latitude;
+    @Override
+    public LatLng getPosition() {
+        return position;
     }
 
-    public double getLongitude() {
-        return longitude;
+    @Override
+    public String getTitle() {
+        return null;
     }
 
-
+    @Override
+    public String getSnippet() {
+        return null;
+    }
 }

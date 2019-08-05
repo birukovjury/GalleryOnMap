@@ -16,8 +16,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.ClusterManager;
 import com.petproject.ybiry.galleryonmap.R;
 import com.petproject.ybiry.galleryonmap.arch.BaseViewModelFragment;
 import com.petproject.ybiry.galleryonmap.data.model.Photo;
@@ -30,6 +29,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private ClusterManager<Photo> mClusterManager;
     private static final String TAG = "MainFragment";
 
     @Override
@@ -66,6 +66,10 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         observeLoadingState();
         observeForToast();
         observeNewPhotos();
+    }
+
+    private GoogleMap getMap() {
+        return mMap;
     }
 
     private void initDependencies() {
@@ -110,9 +114,9 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
             @Override
             public void onChanged(List<Photo> photos) {
                 Log.e(TAG, "New photo received");
-                if (photos != null) setMarkers(photos);
+                if (photos != null && !photos.isEmpty()) setMarkers(photos);
                 else {
-                    showToast("Something went wrong");
+                    showToast("Photo with location haven't found");
                 }
             }
         });
@@ -138,20 +142,18 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
 
 
     private void setMarkers(List<Photo> photos) {
-        LatLng position;
-        int i = photos.size() - 1;
-        do {
-            position = new LatLng(photos.get(i).getLatitude(), photos.get(i).getLongitude());
-            mMap.addMarker(new MarkerOptions().position(position).title("Photo №" + i));
-            i--;
+        for (int i = 0; i < photos.size(); i++) {
+            mClusterManager.addItem(photos.get(i));
         }
-        while (0 <= i);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(photos.get(0).getPosition()));
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         getViewModel().getInitialData();
+        mClusterManager = new ClusterManager<Photo>(requireContext(), getMap());
+        getMap().setOnCameraIdleListener(mClusterManager);
+        getMap().setOnMarkerClickListener(mClusterManager);
     }
 }
