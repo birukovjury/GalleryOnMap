@@ -17,19 +17,23 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.maps.android.clustering.ClusterManager;
 import com.petproject.ybiry.galleryonmap.R;
 import com.petproject.ybiry.galleryonmap.arch.BaseViewModelFragment;
 import com.petproject.ybiry.galleryonmap.data.model.Photo;
 import com.petproject.ybiry.galleryonmap.databinding.FragmentMainBinding;
+import com.petproject.ybiry.galleryonmap.ui.main.adapters.CustomInfoWindowAdapter;
 
 import java.util.List;
 import java.util.Objects;
 
 public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, MainFragmentViewModel>
-        implements OnMapReadyCallback {
+        implements OnMapReadyCallback,
+        GoogleMap.OnInfoWindowClickListener {
 
     private GoogleMap mMap;
+    private CustomInfoWindowAdapter mAdapter;
     private ClusterManager<Photo> mClusterManager;
     private static final String TAG = "MainFragment";
 
@@ -69,12 +73,15 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         observeNewPhotos();
     }
 
+
     private GoogleMap getMap() {
         return mMap;
     }
 
+
     private void initDependencies() {
         getViewModel().init();
+        mAdapter = new CustomInfoWindowAdapter(getActivity());
     }
 
 
@@ -100,6 +107,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         mMap.getUiSettings().setAllGesturesEnabled(!state);
     }
 
+
     private void observeForToast() {
         getViewModel().getToast().observe(this, new Observer<String>() {
             @Override
@@ -109,6 +117,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
             }
         });
     }
+
 
     private void observeNewPhotos() {
         getViewModel().getPhotos().observe(this, new Observer<List<Photo>>() {
@@ -122,6 +131,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
             }
         });
     }
+
 
     private void showToast(String s) {
         Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
@@ -157,9 +167,16 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        getViewModel().getInitialData();
         mClusterManager = new ClusterManager<Photo>(requireContext(), getMap());
+        getViewModel().getInitialData();
         getMap().setOnCameraIdleListener(mClusterManager);
         getMap().setOnMarkerClickListener(mClusterManager);
+        getMap().setInfoWindowAdapter(mAdapter);
+    }
+
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        showToast("Marker clicked:" + marker.getId());
     }
 }

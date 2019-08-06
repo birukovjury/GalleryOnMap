@@ -5,12 +5,16 @@ import com.google.maps.android.clustering.ClusterItem;
 
 public class Photo implements ClusterItem {
 
-    private String path;
+    private final String path;
+    private final String title;
+    private final String snipped;
     private final LatLng position;
 
 
-    public Photo(String path, double latitude, double longitude) {
+    public Photo(String path, double latitude, double longitude, String title, String snipped) {
         this.path = path;
+        this.snipped = snipped;
+        this.title = title;
         position = new LatLng(latitude, longitude);
     }
 
@@ -21,11 +25,15 @@ public class Photo implements ClusterItem {
 
     @Override
     public String getTitle() {
-        return null;
+        return title;
     }
 
     @Override
     public String getSnippet() {
-        return null;
+        return snipped;
+    }
+
+    public String getPath() {
+        return path;
     }
 }
