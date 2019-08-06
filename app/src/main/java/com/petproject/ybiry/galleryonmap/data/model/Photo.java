@@ -6,6 +6,7 @@ import com.google.maps.android.clustering.ClusterItem;
 public class Photo implements ClusterItem {
 
     private final String path;
+    private final String image;
     private final String title;
     private final String snipped;
     private final LatLng position;
@@ -16,6 +17,7 @@ public class Photo implements ClusterItem {
         this.snipped = snipped;
         this.title = title;
         position = new LatLng(latitude, longitude);
+        image = "ic_menu_camera";
     }
 
     @Override
@@ -35,5 +37,9 @@ public class Photo implements ClusterItem {
 
     public String getPath() {
         return path;
+    }
+
+    public String getImage() {
+        return image;
     }
 }
