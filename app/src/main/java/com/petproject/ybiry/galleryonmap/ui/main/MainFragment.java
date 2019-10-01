@@ -86,12 +86,9 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
 
 
     private void observeLoadingState() {
-        getViewModel().isLoading().observe(this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean isLoading) {
-                Log.e(TAG, "Progress state received: " + isLoading);
-                setLoadingState(isLoading);
-            }
+        getViewModel().isLoading().observe(this, isLoading -> {
+            Log.e(TAG, "Progress state received: " + isLoading);
+            setLoadingState(isLoading);
         });
     }
 
@@ -109,25 +106,19 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
 
 
     private void observeForToast() {
-        getViewModel().getToast().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(String message) {
-                Log.e(TAG, "Toast received: " + message);
-                showToast(message);
-            }
+        getViewModel().getToast().observe(this, message -> {
+            Log.e(TAG, "Toast received: " + message);
+            showToast(message);
         });
     }
 
 
     private void observeNewPhotos() {
-        getViewModel().getPhotos().observe(this, new Observer<List<Photo>>() {
-            @Override
-            public void onChanged(List<Photo> photos) {
-                Log.e(TAG, "New photo received");
-                if (photos != null && !photos.isEmpty()) setMarkers(photos);
-                else {
-                    showToast("Photo with location haven't found");
-                }
+        getViewModel().getPhotos().observe(this, photos -> {
+            Log.e(TAG, "New photo received");
+            if (photos != null && !photos.isEmpty()) setMarkers(photos);
+            else {
+                showToast("Photo with location haven't found");
             }
         });
     }
@@ -139,14 +130,13 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
 
 
     private void observeForPermissionRequest() {
-        getViewModel().getRequestPermissions().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(String requiredPermission) {
-                Log.e(TAG, "Permission request received: " + requiredPermission);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && requiredPermission != null) {
-                    ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()), new String[]{requiredPermission},
-                            0);
-                }
+
+
+        getViewModel().getRequestPermissions().observe(this, requiredPermission -> {
+            Log.e(TAG, "Permission request received: " + requiredPermission);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && requiredPermission != null) {
+                ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()), new String[]{requiredPermission},
+                        0);
             }
         });
     }
@@ -167,7 +157,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mClusterManager = new ClusterManager<Photo>(requireContext(), getMap());
+        mClusterManager = new ClusterManager<>(requireContext(), getMap());
         getViewModel().getInitialData();
         getMap().setOnCameraIdleListener(mClusterManager);
         getMap().setOnMarkerClickListener(mClusterManager);
