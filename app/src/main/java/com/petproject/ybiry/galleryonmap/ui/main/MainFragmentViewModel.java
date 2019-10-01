@@ -53,15 +53,15 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
         super(application);
     }
 
-    public void init() {
+    void init() {
         if (mListOfPhotosLiveData == null)
-            mListOfPhotosLiveData = new MutableLiveData<List<Photo>>();
+            mListOfPhotosLiveData = new MutableLiveData<>();
 
         if (mToastLiveData == null)
-            mToastLiveData = new MutableLiveData<String>();
+            mToastLiveData = new MutableLiveData<>();
 
         if (mRequestPermissionLiveData == null)
-            mRequestPermissionLiveData = new MutableLiveData<String>();
+            mRequestPermissionLiveData = new MutableLiveData<>();
 
         if (mRepo == null)
             mRepo = new RepositoryImpl(getApplication().getApplicationContext());

@@ -155,7 +155,6 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     private void setMarkers(List<Photo> photos) {
         for (int i = 0; i < photos.size(); i++) {
             mClusterManager.addItem(photos.get(i));
-            mClusterManager.getClusterMarkerCollection().getMarkers();
         }
         moveToCurrentLocation(photos.get(0).getPosition());
     }
