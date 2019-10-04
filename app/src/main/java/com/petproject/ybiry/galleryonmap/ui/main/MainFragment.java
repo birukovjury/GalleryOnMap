@@ -9,7 +9,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -18,6 +17,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.petproject.ybiry.galleryonmap.R;
 import com.petproject.ybiry.galleryonmap.arch.BaseViewModelFragment;
@@ -30,12 +30,15 @@ import java.util.Objects;
 
 public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, MainFragmentViewModel>
         implements OnMapReadyCallback,
-        GoogleMap.OnInfoWindowClickListener {
+        ClusterManager.OnClusterClickListener<Photo>,
+        ClusterManager.OnClusterInfoWindowClickListener<Photo>,
+        ClusterManager.OnClusterItemClickListener<Photo>,
+        ClusterManager.OnClusterItemInfoWindowClickListener<Photo> {
 
+    private static final String TAG = "MainFragment";
     private GoogleMap mMap;
     private CustomInfoWindowAdapter mAdapter;
     private ClusterManager<Photo> mClusterManager;
-    private static final String TAG = "MainFragment";
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -116,9 +119,9 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     private void observeNewPhotos() {
         getViewModel().getPhotos().observe(this, photos -> {
             Log.e(TAG, "New photo received");
-            if (photos != null && !photos.isEmpty()) setMarkers(photos);
+            if (photos != null && !photos.isEmpty()) addItems(photos);
             else {
-                showToast("Photo with location haven't found");
+                showToast("Photos with location haven't found");
             }
         });
     }
@@ -130,8 +133,6 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
 
 
     private void observeForPermissionRequest() {
-
-
         getViewModel().getRequestPermissions().observe(this, requiredPermission -> {
             Log.e(TAG, "Permission request received: " + requiredPermission);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && requiredPermission != null) {
@@ -142,7 +143,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     }
 
 
-    private void setMarkers(List<Photo> photos) {
+    private void addItems(List<Photo> photos) {
         for (int i = 0; i < photos.size(); i++) {
             mClusterManager.addItem(photos.get(i));
         }
@@ -157,17 +158,46 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mClusterManager = new ClusterManager<>(requireContext(), getMap());
         getViewModel().getInitialData();
-        getMap().setOnCameraIdleListener(mClusterManager);
-        getMap().setOnMarkerClickListener(mClusterManager);
-        getMap().setInfoWindowAdapter(mAdapter);
-
+        setUpCluster();
     }
 
+    private void setUpCluster() {
+        if (mClusterManager == null)
+            mClusterManager = new ClusterManager<Photo>(requireContext(), getMap());
+
+        mClusterManager.setOnClusterClickListener(this);
+        mClusterManager.setOnClusterInfoWindowClickListener(this);
+        mClusterManager.setOnClusterItemClickListener(this);
+        mClusterManager.setOnClusterItemInfoWindowClickListener(this);
+
+        getMap().setInfoWindowAdapter(mAdapter);
+        getMap().setOnCameraIdleListener(mClusterManager);
+        getMap().setOnMarkerClickListener(mClusterManager);
+        getMap().setOnInfoWindowClickListener(mClusterManager);
+
+        mClusterManager.cluster();
+    }
 
     @Override
-    public void onInfoWindowClick(Marker marker) {
-        showToast("Marker clicked:" + marker.getId());
+    public boolean onClusterClick(Cluster<Photo> cluster) {
+        showToast("Cluster clicked:");
+        return false;
+    }
+
+    @Override
+    public void onClusterInfoWindowClick(Cluster<Photo> cluster) {
+        showToast("Info window clicked:");
+    }
+
+    @Override
+    public boolean onClusterItemClick(Photo photo) {
+        showToast("onClusterItemClick");
+        return false;
+    }
+
+    @Override
+    public void onClusterItemInfoWindowClick(Photo photo) {
+        showToast("onClusterItemInfoWindowClick");
     }
 }

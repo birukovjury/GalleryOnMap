@@ -36,8 +36,8 @@
             android:name="io.fabric.ApiKey"
             android:value="18879d6b0a6550d55ca4193afb81027c37a3e663" />
         <meta-data
-            android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyDbGH5-1HnTDZWn1F-avym8hRtuK-ksP5w"></meta-data>
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDbGH5-1HnTDZWn1F-avym8hRtuK-ksP5w" />
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version"></meta-data>
