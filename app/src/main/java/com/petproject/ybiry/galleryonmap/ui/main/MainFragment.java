@@ -182,22 +182,26 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     @Override
     public boolean onClusterClick(Cluster<Photo> cluster) {
         showToast("Cluster clicked:");
+        Log.e(TAG, "onClusterClick");
         return false;
     }
 
     @Override
     public void onClusterInfoWindowClick(Cluster<Photo> cluster) {
         showToast("Info window clicked:");
+        Log.e(TAG, "onClusterInfoWindowClick");
     }
 
     @Override
     public boolean onClusterItemClick(Photo photo) {
         showToast("onClusterItemClick");
+        Log.e(TAG, "onClusterItemClick");
         return false;
     }
 
     @Override
     public void onClusterItemInfoWindowClick(Photo photo) {
         showToast("onClusterItemInfoWindowClick");
+        Log.e(TAG, "onClusterItemInfoWindowClick");
     }
 }

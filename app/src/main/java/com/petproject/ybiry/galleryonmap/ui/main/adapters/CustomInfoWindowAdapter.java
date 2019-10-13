@@ -1,6 +1,8 @@
 package com.petproject.ybiry.galleryonmap.ui.main.adapters;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,13 +33,11 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         TextView subTitleTextView = view.findViewById(R.id.tv_subtitle);
         ImageView img = view.findViewById(R.id.pic);
 
-        Photo photo = (Photo) marker.getTag();
 
+        Bitmap myBitmap = BitmapFactory.decodeFile(marker.getSnippet());
         titleTextView.setText(marker.getTitle());
-        subTitleTextView.setText(marker.getSnippet());
-        int imageId = mContext.getResources().getIdentifier("ic_menu_camera",
-                "drawable", mContext.getPackageName());
-        img.setImageResource(imageId);
+        img.setMaxHeight(50);
+        img.setImageBitmap(myBitmap);
 
         return view;
     }
