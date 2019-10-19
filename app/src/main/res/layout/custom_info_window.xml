@@ -25,11 +25,39 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_title" />
 
     <ImageView
-        android:id="@+id/pic"
+        android:id="@+id/pic1"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:contentDescription="@string/preview"
+        android:visibility="gone"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_subtitle" />
+
+    <ImageView
+        android:id="@+id/pic2"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:contentDescription="@string/preview"
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pic1" />
+
+    <ImageView
+        android:id="@+id/pic3"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:contentDescription="@string/preview"
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pic2" />
+
+    <ImageView
+        android:id="@+id/pic4"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:contentDescription="@string/preview"
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pic3" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

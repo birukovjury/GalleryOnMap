@@ -171,12 +171,13 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         mClusterManager.setOnClusterItemClickListener(this);
         mClusterManager.setOnClusterItemInfoWindowClickListener(this);
 
-        getMap().setInfoWindowAdapter(mAdapter);
+
         getMap().setOnCameraIdleListener(mClusterManager);
         getMap().setOnMarkerClickListener(mClusterManager);
         getMap().setOnInfoWindowClickListener(mClusterManager);
 
         mClusterManager.cluster();
+        getMap().setInfoWindowAdapter(mAdapter);
     }
 
     @Override
