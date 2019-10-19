@@ -16,7 +16,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.petproject.ybiry.galleryonmap.R;
@@ -84,7 +83,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
 
     private void initDependencies() {
         getViewModel().init();
-        mAdapter = new CustomInfoWindowAdapter(getActivity());
+
     }
 
 
@@ -164,7 +163,8 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
 
     private void setUpCluster() {
         if (mClusterManager == null)
-            mClusterManager = new ClusterManager<Photo>(requireContext(), getMap());
+            mClusterManager = new ClusterManager<>(requireContext(), getMap());
+        mAdapter = new CustomInfoWindowAdapter(getActivity(), mClusterManager);
 
         mClusterManager.setOnClusterClickListener(this);
         mClusterManager.setOnClusterInfoWindowClickListener(this);

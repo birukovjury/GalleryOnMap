@@ -33,8 +33,4 @@ public class Photo implements ClusterItem {
         return path;
     }
 
-    public String getPath() {
-        return path;
-    }
-
 }
