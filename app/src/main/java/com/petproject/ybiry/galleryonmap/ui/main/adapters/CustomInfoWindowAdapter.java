@@ -10,17 +10,13 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
-import com.google.maps.android.MarkerManager;
 import com.google.maps.android.clustering.ClusterManager;
 import com.petproject.ybiry.galleryonmap.R;
 import com.petproject.ybiry.galleryonmap.data.model.Photo;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
@@ -43,48 +39,52 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         View view = mContext.getLayoutInflater().inflate(R.layout.custom_info_window, null);
 
         TextView titleTextView = view.findViewById(R.id.tv_title);
-        TextView subTitleTextView = view.findViewById(R.id.tv_subtitle);
         ImageView img1 = view.findViewById(R.id.pic1);
         ImageView img2 = view.findViewById(R.id.pic2);
         ImageView img3 = view.findViewById(R.id.pic3);
         ImageView img4 = view.findViewById(R.id.pic4);
-
-
-        Bitmap myBitmap;
+        setVisibility(false, img1, img2, img3, img4);
 
         if (StringUtils.isNoneBlank(marker.getSnippet())) {
-            myBitmap = BitmapFactory.decodeFile(marker.getSnippet());
+            Bitmap bitmap = BitmapFactory.decodeFile(marker.getSnippet());
             titleTextView.setText(marker.getTitle());
-            img1.setImageBitmap(myBitmap);
+            img1.setImageBitmap(bitmap);
             setVisibility(true, img1);
+
         } else {
-            List<Bitmap> bitmaps = new LinkedList<>();
-            int markersCount = mClusterManager.getAlgorithm().getItems().size();
-
-            Log.d(TAG, "ClusterSize count = " + markersCount);
-
             Collection<Photo> markers = mClusterManager.getAlgorithm().getItems();
-            for (Photo m : markers) {
-                bitmaps.add(BitmapFactory.decodeFile(m.getSnippet()));
-                Log.d(TAG, "snipped = " + m.getSnippet());
+            Log.d(TAG, "ClusterSize = " + markers.size());
+            titleTextView.setText(mContext.getApplicationContext().getString(R.string.cluster_title));
+            if (!markers.isEmpty()) {
+                Photo[] array = new Photo[markers.size()];
+                array = markers.toArray(array);
+                switch (markers.size()) {
+                    case 1:
+                        img1.setImageBitmap(BitmapFactory.decodeFile(array[0].getSnippet()));
+                        setVisibility(true, img1);
+                        break;
+                    case 2:
+                        img1.setImageBitmap(BitmapFactory.decodeFile(array[0].getSnippet()));
+                        img2.setImageBitmap(BitmapFactory.decodeFile(array[1].getSnippet()));
+                        setVisibility(true, img1, img2);
+                        break;
+                    case 3:
+                        img1.setImageBitmap(BitmapFactory.decodeFile(array[0].getSnippet()));
+                        img2.setImageBitmap(BitmapFactory.decodeFile(array[1].getSnippet()));
+                        img3.setImageBitmap(BitmapFactory.decodeFile(array[2].getSnippet()));
+                        setVisibility(true, img1, img2, img3);
+                        break;
+                    case 4:
+                    default:
+                        img1.setImageBitmap(BitmapFactory.decodeFile(array[0].getSnippet()));
+                        img2.setImageBitmap(BitmapFactory.decodeFile(array[1].getSnippet()));
+                        img3.setImageBitmap(BitmapFactory.decodeFile(array[2].getSnippet()));
+                        img4.setImageBitmap(BitmapFactory.decodeFile(array[3].getSnippet()));
+                        setVisibility(true, img1, img2, img3, img4);
+                }
             }
-
-
-            Log.d(TAG, "bitmaps count = " + bitmaps.size());
-
-            if (!bitmaps.isEmpty()) {
-                titleTextView.setText("Cluster title");
-                img1.setImageBitmap(bitmaps.get(0));
-                img2.setImageBitmap(bitmaps.get(1));
-                img3.setImageBitmap(bitmaps.get(2));
-                img4.setImageBitmap(bitmaps.get(3));
-                setVisibility(true, img1, img2, img3, img4);
-            }
-
-            // img.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_menu_camera));
         }
-
-        img1.setMaxHeight(50);
+        setMaxHeight(30, img1, img2, img3, img4);
         return view;
     }
 
@@ -93,6 +93,12 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
             if (visible)
                 view.setVisibility(View.VISIBLE);
             else view.setVisibility(View.GONE);
+        }
+    }
+
+    private void setMaxHeight(int height, ImageView... views) {
+        for (ImageView view : views) {
+            view.setMaxHeight(height);
         }
     }
 }
