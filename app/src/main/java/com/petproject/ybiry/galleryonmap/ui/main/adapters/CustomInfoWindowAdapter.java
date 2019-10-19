@@ -59,7 +59,6 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
             setVisibility(true, img1);
         } else {
             List<Bitmap> bitmaps = new LinkedList<>();
-            List<Photo> photos = new LinkedList<>();
             int markersCount = mClusterManager.getAlgorithm().getItems().size();
 
             Log.d(TAG, "ClusterSize count = " + markersCount);
@@ -70,20 +69,11 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
                 Log.d(TAG, "snipped = " + m.getSnippet());
             }
 
-            for (int i = 0; i < 4 && i < markersCount; i++) {
-                if (mClusterManager.getAlgorithm().getItems().iterator().hasNext()) {
-                    Photo photo = (Photo) mClusterManager.getAlgorithm().getItems().iterator().next();
-                    bitmaps.add(BitmapFactory.decodeFile(photo.getSnippet()));
-                    Log.d(TAG, "snipped = " + photo.getSnippet());
-                    photos.add(photo);
-                } else break;
-            }
 
-            Log.d(TAG, "markers count = " + photos.size());
             Log.d(TAG, "bitmaps count = " + bitmaps.size());
 
-            if (!photos.isEmpty()) {
-                titleTextView.setText(photos.get(0).getTitle());
+            if (!bitmaps.isEmpty()) {
+                titleTextView.setText("Cluster title");
                 img1.setImageBitmap(bitmaps.get(0));
                 img2.setImageBitmap(bitmaps.get(1));
                 img3.setImageBitmap(bitmaps.get(2));
