@@ -1,9 +1,7 @@
 package com.petproject.ybiry.galleryonmap.ui.main.adapters;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;

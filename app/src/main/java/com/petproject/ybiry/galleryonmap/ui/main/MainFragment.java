@@ -244,7 +244,6 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     public void onClusterItemInfoWindowClick(Photo photo) {
         Log.e(TAG, "onClusterItemInfoWindowClick");
         openPhotoInGallery(photo);
-
     }
 
     private void openPhotoInGallery(Photo photo) {
