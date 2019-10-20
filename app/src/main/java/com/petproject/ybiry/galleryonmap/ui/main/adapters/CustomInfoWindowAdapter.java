@@ -1,7 +1,9 @@
 package com.petproject.ybiry.galleryonmap.ui.main.adapters;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -12,6 +14,9 @@ import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.petproject.ybiry.galleryonmap.R;
 import com.petproject.ybiry.galleryonmap.data.model.Photo;
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
 
 public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
@@ -46,13 +51,13 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
         if (mCluster == null) { //means marker tapped, not cluster
             titleTextView.setText(marker.getTitle());
-            /*
-            Picasso.get()
+
+          /*  Picasso.get()
                     .load(new File(marker.getSnippet()))
                     .resize(MAX_WIDTH, MAX_HEIGHT)
                     .placeholder(R.drawable.spinner)
-                    .into(img1);
-                    */
+                    .into(img1);*/
+
             titleTextView.setText(marker.getTitle());
             setVisibility(true, img1);
             img1.setImageBitmap(BitmapFactory.decodeFile(marker.getSnippet()));
