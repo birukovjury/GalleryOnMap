@@ -184,6 +184,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     public boolean onClusterClick(Cluster<Photo> cluster) {
         showToast("Cluster clicked:");
         Log.e(TAG, "onClusterClick");
+        mAdapter.setCluster(cluster);
         return false;
     }
 
@@ -197,6 +198,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     public boolean onClusterItemClick(Photo photo) {
         showToast("onClusterItemClick");
         Log.e(TAG, "onClusterItemClick");
+        mAdapter.setCluster(null);
         return false;
     }
 

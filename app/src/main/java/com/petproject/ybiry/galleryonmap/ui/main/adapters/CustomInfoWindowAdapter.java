@@ -10,11 +10,10 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
+import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.petproject.ybiry.galleryonmap.R;
 import com.petproject.ybiry.galleryonmap.data.model.Photo;
-
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collection;
 
@@ -22,11 +21,14 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
     private static final String TAG = "infoWindowAdapter";
     private final Activity mContext;
-    private final ClusterManager mClusterManager;
+    private Cluster<Photo> mCluster;
 
     public CustomInfoWindowAdapter(Activity context, ClusterManager manager) {
         mContext = context;
-        mClusterManager = manager;
+    }
+
+    public void setCluster(Cluster<Photo> mCluster) {
+        this.mCluster = mCluster;
     }
 
     @Override
@@ -45,14 +47,13 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         ImageView img4 = view.findViewById(R.id.pic4);
         setVisibility(false, img1, img2, img3, img4);
 
-        if (StringUtils.isNoneBlank(marker.getSnippet())) {
+        if (mCluster == null) {
             Bitmap bitmap = BitmapFactory.decodeFile(marker.getSnippet());
             titleTextView.setText(marker.getTitle());
             img1.setImageBitmap(bitmap);
             setVisibility(true, img1);
-
         } else {
-            Collection<Photo> markers = mClusterManager.getAlgorithm().getItems();
+            Collection<Photo> markers = mCluster.getItems();
             Log.d(TAG, "ClusterSize = " + markers.size());
             titleTextView.setText(mContext.getApplicationContext().getString(R.string.cluster_title));
             if (!markers.isEmpty()) {
@@ -84,6 +85,7 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
                 }
             }
         }
+
         setMaxHeight(30, img1, img2, img3, img4);
         return view;
     }
