@@ -43,7 +43,7 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
 
     private MutableLiveData<List<Photo>> mListOfPhotosLiveData;
     private MutableLiveData<String> mToastLiveData;
-    private MutableLiveData<String> mRequestPermissionLiveData;
+    private MutableLiveData<String[]> mRequestPermissionLiveData;
 
     private Repository mRepo;
     private LocationManager mLocationManager;
@@ -61,7 +61,7 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
             mToastLiveData = new MutableLiveData<>();
 
         if (mRequestPermissionLiveData == null)
-            mRequestPermissionLiveData = new MutableLiveData<>();
+            mRequestPermissionLiveData = new MutableLiveData<String[]>();
 
         if (mRepo == null)
             mRepo = new RepositoryImpl(getApplication().getApplicationContext());
@@ -69,29 +69,24 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
         mLocationManager = (LocationManager) getApplication().getSystemService(Context.LOCATION_SERVICE);
         mLocationListener = initLocationListener();
 
+        askViewForPermissions();
         subscribeLocationService();
-
-        if (!isExternalStorageGranted(getApplication().getApplicationContext())) {
-            requestExternalStorageReadPermissions();
-        }
-
     }
+
+    private void askViewForPermissions() {
+        boolean isStorageGranted = isExternalStorageGranted(getApplication().getApplicationContext());
+        boolean isLocationGranted = isLocationGranted(getApplication().getApplicationContext());
+        if (!(isStorageGranted && isLocationGranted)) {
+            requestLocationAndStoragePermissions();
+        } else requestExternalStorageReadPermissions();
+    }
+
 
     void getInitialData() {
         mRepo.getPhotos().subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable disposable) throws Exception {
-                        postLoading(true);
-                    }
-                })
-                .doFinally(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        setLoading(false);
-                    }
-                })
+                .doOnSubscribe(disposable -> postLoading(true))
+                .doFinally(() -> setLoading(false))
                 .subscribe(new SingleObserver<List<Photo>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -147,11 +142,18 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
     }
 
     private void requestLocationPermissions() {
-        mRequestPermissionLiveData.postValue(Manifest.permission.ACCESS_FINE_LOCATION);
+        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION};
+        mRequestPermissionLiveData.postValue(permissions);
     }
 
     private void requestExternalStorageReadPermissions() {
-        mRequestPermissionLiveData.postValue(Manifest.permission.READ_EXTERNAL_STORAGE);
+        String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
+        mRequestPermissionLiveData.postValue(permissions);
+    }
+
+    private void requestLocationAndStoragePermissions() {
+        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE};
+        mRequestPermissionLiveData.setValue(permissions);
     }
 
     private boolean isAboveMarshmallow() {
@@ -232,7 +234,7 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
         return mToastLiveData;
     }
 
-    LiveData<String> getRequestPermissions() {
+    LiveData<String[]> getRequestPermissions() {
         return mRequestPermissionLiveData;
     }
 }

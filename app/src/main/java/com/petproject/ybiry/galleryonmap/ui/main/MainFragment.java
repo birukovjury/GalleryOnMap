@@ -30,6 +30,7 @@ import com.petproject.ybiry.galleryonmap.databinding.FragmentMainBinding;
 import com.petproject.ybiry.galleryonmap.ui.main.adapters.CustomInfoWindowAdapter;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -40,6 +41,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         ClusterManager.OnClusterItemClickListener<Photo>,
         ClusterManager.OnClusterItemInfoWindowClickListener<Photo> {
 
+    public static final int PERMISSIONS_MULTIPLE_REQUEST = 123;
     private static final String TAG = "MainFragment";
     private GoogleMap mMap;
     private CustomInfoWindowAdapter mAdapter;
@@ -151,11 +153,12 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
 
 
     private void observeForPermissionRequest() {
-        getViewModel().getRequestPermissions().observe(this, requiredPermission -> {
-            Log.e(TAG, "Permission request received: " + requiredPermission);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && requiredPermission != null) {
-                ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()), new String[]{requiredPermission},
-                        0);
+        getViewModel().getRequestPermissions().observe(this, requiredPermissions -> {
+            Log.e(TAG, "Permission request received: " + Arrays.toString(requiredPermissions));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && requiredPermissions != null) {
+                ActivityCompat.requestPermissions(requireActivity(),
+                        requiredPermissions,
+                        PERMISSIONS_MULTIPLE_REQUEST);
             }
         });
     }
