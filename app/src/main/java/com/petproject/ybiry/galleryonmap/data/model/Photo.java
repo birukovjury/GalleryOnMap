@@ -7,13 +7,11 @@ public class Photo implements ClusterItem {
 
     private final String path;
     private final String title;
-    private final String snipped;
     private final LatLng position;
 
 
-    public Photo(String path, double latitude, double longitude, String title, String snipped) {
+    public Photo(String path, double latitude, double longitude, String title) {
         this.path = path;
-        this.snipped = snipped;
         this.title = title;
         position = new LatLng(latitude, longitude);
     }

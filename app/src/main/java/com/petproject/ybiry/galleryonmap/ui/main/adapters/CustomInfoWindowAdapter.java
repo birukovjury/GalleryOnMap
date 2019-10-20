@@ -16,6 +16,8 @@ import com.petproject.ybiry.galleryonmap.R;
 import com.petproject.ybiry.galleryonmap.data.model.Photo;
 import com.squareup.picasso.Picasso;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.File;
 
 public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
@@ -48,9 +50,13 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         ImageView img3 = view.findViewById(R.id.pic3);
         ImageView img4 = view.findViewById(R.id.pic4);
         setVisibility(false, img1, img2, img3, img4);
+        titleTextView.setVisibility(View.GONE);
 
         if (mCluster == null) { //means marker tapped, not cluster
-            titleTextView.setText(marker.getTitle());
+            if (StringUtils.isNoneBlank(marker.getTitle())) {
+                titleTextView.setText(marker.getTitle());
+                titleTextView.setVisibility(View.VISIBLE);
+            }
 
           /*  Picasso.get()
                     .load(new File(marker.getSnippet()))
@@ -92,9 +98,9 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
                         setVisibility(true, img1, img2, img3, img4);
                 }
                 titleTextView.setText(mContext.getApplicationContext().getString(R.string.cluster_title));
+                titleTextView.setVisibility(View.VISIBLE);
             }
         }
-
         return view;
     }
 

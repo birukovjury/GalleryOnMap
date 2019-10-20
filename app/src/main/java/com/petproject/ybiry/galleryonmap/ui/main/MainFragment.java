@@ -1,5 +1,7 @@
 package com.petproject.ybiry.galleryonmap.ui.main;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -19,12 +22,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
+import com.petproject.ybiry.galleryonmap.BuildConfig;
 import com.petproject.ybiry.galleryonmap.R;
 import com.petproject.ybiry.galleryonmap.arch.BaseViewModelFragment;
 import com.petproject.ybiry.galleryonmap.data.model.Photo;
 import com.petproject.ybiry.galleryonmap.databinding.FragmentMainBinding;
 import com.petproject.ybiry.galleryonmap.ui.main.adapters.CustomInfoWindowAdapter;
 
+import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
@@ -223,5 +228,19 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     public void onClusterItemInfoWindowClick(Photo photo) {
         showToast("onClusterItemInfoWindowClick");
         Log.e(TAG, "onClusterItemInfoWindowClick");
+        openPhotoInGallery(photo);
+
+    }
+
+    private void openPhotoInGallery(Photo photo) {
+        File imageFile = new File(photo.getSnippet());
+        Intent intent = new Intent();
+        intent.setAction(android.content.Intent.ACTION_VIEW);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        Uri uri = FileProvider.getUriForFile(requireContext(),
+                BuildConfig.APPLICATION_ID + ".provider",
+                imageFile);
+        intent.setDataAndType(uri, "image/*");
+        startActivity(intent);
     }
 }

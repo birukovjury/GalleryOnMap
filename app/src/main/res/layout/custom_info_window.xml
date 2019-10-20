@@ -10,7 +10,8 @@
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,7 +22,7 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:contentDescription="@string/preview"
-        android:padding="5dp"
+        android:padding="2dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_title" />
 
@@ -30,7 +31,7 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:contentDescription="@string/preview"
-        android:padding="5dp"
+        android:padding="2dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toEndOf="@+id/pic1"
         app:layout_constraintTop_toBottomOf="@+id/tv_title" />
@@ -40,7 +41,7 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:contentDescription="@string/preview"
-        android:padding="5dp"
+        android:padding="2dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pic2" />
 
@@ -49,7 +50,7 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:contentDescription="@string/preview"
-        android:padding="5dp"
+        android:padding="2dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toEndOf="@+id/pic3"
         app:layout_constraintTop_toBottomOf="@+id/pic2" />

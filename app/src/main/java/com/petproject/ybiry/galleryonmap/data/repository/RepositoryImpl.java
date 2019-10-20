@@ -68,7 +68,7 @@ public class RepositoryImpl implements Repository {
                 do {
                     latlng = getLatLngData(cursor.getString(image_path_col));
                     if (latlng != null)
-                        photos.add(new Photo(cursor.getString(image_path_col), latlng[0], latlng[1], "title", "snipped"));
+                        photos.add(new Photo(cursor.getString(image_path_col), latlng[0], latlng[1], ""));
                 } while (cursor.moveToNext());
             }
             cursor.close();
