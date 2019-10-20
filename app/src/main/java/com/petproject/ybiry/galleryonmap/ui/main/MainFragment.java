@@ -16,6 +16,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.petproject.ybiry.galleryonmap.R;
@@ -154,6 +155,21 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         getMap().animateCamera(CameraUpdateFactory.zoomTo(11), 1000, null);
     }
 
+    private void zoomCluster(Cluster<Photo> cluster) {
+        LatLngBounds.Builder builder = LatLngBounds.builder();
+        for (Photo item : cluster.getItems()) {
+            builder.include(new LatLng(item.getPosition().latitude, item.getPosition().longitude));
+        }
+        final LatLngBounds bounds = builder.build();
+
+        try {
+            getMap().animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
+        } catch (Exception e) {
+            Log.e(TAG, "onClusterClick: " + e.getMessage());
+        }
+    }
+
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -191,6 +207,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     @Override
     public void onClusterInfoWindowClick(Cluster<Photo> cluster) {
         showToast("Info window clicked:");
+        zoomCluster(cluster);
         Log.e(TAG, "onClusterInfoWindowClick");
     }
 
