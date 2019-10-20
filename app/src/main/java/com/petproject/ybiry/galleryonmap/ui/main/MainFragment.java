@@ -48,7 +48,9 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+    }
 
+    private void getAsyncMap() {
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
         if (mapFragment != null) {
@@ -59,7 +61,16 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getAsyncMap();
         initDependencies();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mMap == null) {
+            getAsyncMap();
+        }
     }
 
     @Override
@@ -89,7 +100,8 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
 
     private void initDependencies() {
         getViewModel().init();
-
+        if (mAdapter == null)
+            mAdapter = new CustomInfoWindowAdapter(getActivity(), mClusterManager);
     }
 
 
@@ -109,7 +121,8 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
             getBinding().progressBar.setVisibility(View.GONE);
             getBinding().backView.setVisibility(View.GONE);
         }
-        mMap.getUiSettings().setAllGesturesEnabled(!state);
+        if (mMap != null)
+            mMap.getUiSettings().setAllGesturesEnabled(!state);
     }
 
 
@@ -149,16 +162,20 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
 
 
     private void addItems(List<Photo> photos) {
-        for (int i = 0; i < photos.size(); i++) {
-            mClusterManager.addItem(photos.get(i));
+        if (mMap != null) {
+            for (int i = 0; i < photos.size(); i++) {
+                mClusterManager.addItem(photos.get(i));
+            }
+            moveToCurrentLocation(photos.get(0).getPosition());
         }
-        moveToCurrentLocation(photos.get(0).getPosition());
     }
+
 
     private void moveToCurrentLocation(LatLng currentLocation) {
         getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 6));
         getMap().animateCamera(CameraUpdateFactory.zoomTo(11), 1000, null);
     }
+
 
     private void zoomCluster(Cluster<Photo> cluster) {
         LatLngBounds.Builder builder = LatLngBounds.builder();
@@ -170,7 +187,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         try {
             getMap().animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
         } catch (Exception e) {
-            Log.e(TAG, "onClusterClick: " + e.getMessage());
+            Log.e(TAG, "onClusterClick zoom error: " + e.getMessage());
         }
     }
 
@@ -178,20 +195,18 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        getViewModel().getInitialData();
         setUpCluster();
+        getViewModel().getInitialData();
     }
 
     private void setUpCluster() {
         if (mClusterManager == null)
             mClusterManager = new ClusterManager<>(requireContext(), getMap());
-        mAdapter = new CustomInfoWindowAdapter(getActivity(), mClusterManager);
 
         mClusterManager.setOnClusterClickListener(this);
         mClusterManager.setOnClusterInfoWindowClickListener(this);
         mClusterManager.setOnClusterItemClickListener(this);
         mClusterManager.setOnClusterItemInfoWindowClickListener(this);
-
 
         getMap().setOnCameraIdleListener(mClusterManager);
         getMap().setOnMarkerClickListener(mClusterManager);
@@ -201,32 +216,32 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         getMap().setInfoWindowAdapter(mAdapter);
     }
 
+
     @Override
     public boolean onClusterClick(Cluster<Photo> cluster) {
-        showToast("Cluster clicked:");
         Log.e(TAG, "onClusterClick");
         mAdapter.setCluster(cluster);
         return false;
     }
 
+
     @Override
     public void onClusterInfoWindowClick(Cluster<Photo> cluster) {
-        showToast("Info window clicked:");
-        zoomCluster(cluster);
         Log.e(TAG, "onClusterInfoWindowClick");
+        zoomCluster(cluster);
     }
+
 
     @Override
     public boolean onClusterItemClick(Photo photo) {
-        showToast("onClusterItemClick");
         Log.e(TAG, "onClusterItemClick");
         mAdapter.setCluster(null);
         return false;
     }
 
+
     @Override
     public void onClusterItemInfoWindowClick(Photo photo) {
-        showToast("onClusterItemInfoWindowClick");
         Log.e(TAG, "onClusterItemInfoWindowClick");
         openPhotoInGallery(photo);
 
