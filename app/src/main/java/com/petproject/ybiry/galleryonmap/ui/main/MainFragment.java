@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,7 +11,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -160,12 +158,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         getViewModel().getRequestPermissions().observe(this, requiredPermissions -> {
             Log.e(TAG, "Permission request received: " + Arrays.toString(requiredPermissions));
             int requestCode = getPermissionRequestCode(requiredPermissions);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                ActivityCompat.requestPermissions(requireActivity(),
-                        requiredPermissions,
-                        requestCode);
-            }
+            requestPermissions(requiredPermissions, requestCode);
         });
     }
 
@@ -273,5 +266,48 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
                 imageFile);
         intent.setDataAndType(uri, "image/*");
         startActivity(intent);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_MULTIPLE_REQUEST: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.e(TAG, "PERMISSIONS_MULTIPLE_REQUEST");
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+            case PERMISSIONS_REQUEST_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.e(TAG, "PERMISSIONS_REQUEST_LOCATION");
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            case PERMISSIONS_REQUEST_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.e(TAG, "PERMISSIONS_REQUEST_STORAGE");
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request.
+        }
     }
 }

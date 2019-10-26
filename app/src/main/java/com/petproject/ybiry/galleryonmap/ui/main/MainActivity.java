@@ -1,8 +1,6 @@
 package com.petproject.ybiry.galleryonmap.ui.main;
 
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -15,10 +13,6 @@ import com.google.android.material.navigation.NavigationView;
 import com.petproject.ybiry.galleryonmap.R;
 import com.petproject.ybiry.galleryonmap.arch.BaseViewModelActivity;
 import com.petproject.ybiry.galleryonmap.databinding.ActivityMainBinding;
-
-import static com.petproject.ybiry.galleryonmap.data.model.RequestCode.PERMISSIONS_MULTIPLE_REQUEST;
-import static com.petproject.ybiry.galleryonmap.data.model.RequestCode.PERMISSIONS_REQUEST_LOCATION;
-import static com.petproject.ybiry.galleryonmap.data.model.RequestCode.PERMISSIONS_REQUEST_STORAGE;
 
 public class MainActivity extends BaseViewModelActivity<ActivityMainBinding, MainActivityViewModel>
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -118,48 +112,4 @@ public class MainActivity extends BaseViewModelActivity<ActivityMainBinding, Mai
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSIONS_MULTIPLE_REQUEST: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.e(TAG, "PERMISSIONS_MULTIPLE_REQUEST");
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
-            }
-            case PERMISSIONS_REQUEST_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.e(TAG, "PERMISSIONS_REQUEST_LOCATION");
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
-            }
-
-            case PERMISSIONS_REQUEST_STORAGE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.e(TAG, "PERMISSIONS_REQUEST_STORAGE");
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
-            }
-
-            // other 'case' lines to check for other
-            // permissions this app might request.
-        }
-    }
-
 }
