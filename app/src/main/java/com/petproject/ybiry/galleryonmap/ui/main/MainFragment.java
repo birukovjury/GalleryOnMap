@@ -35,16 +35,16 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.petproject.ybiry.galleryonmap.data.model.RequestCode.PERMISSIONS_MULTIPLE_REQUEST;
+import static com.petproject.ybiry.galleryonmap.data.model.RequestCode.PERMISSIONS_REQUEST_LOCATION;
+import static com.petproject.ybiry.galleryonmap.data.model.RequestCode.PERMISSIONS_REQUEST_STORAGE;
+
 public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, MainFragmentViewModel>
         implements OnMapReadyCallback,
         ClusterManager.OnClusterClickListener<Photo>,
         ClusterManager.OnClusterInfoWindowClickListener<Photo>,
         ClusterManager.OnClusterItemClickListener<Photo>,
         ClusterManager.OnClusterItemInfoWindowClickListener<Photo> {
-
-    private static final int PERMISSIONS_MULTIPLE_REQUEST = 123;
-    private static final int PERMISSIONS_REQUEST_LOCATION = 111;
-    private static final int PERMISSIONS_REQUEST_STORAGE = 100;
 
     private static final String TAG = "MainFragment";
     private GoogleMap mMap;
@@ -273,48 +273,5 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
                 imageFile);
         intent.setDataAndType(uri, "image/*");
         startActivity(intent);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSIONS_MULTIPLE_REQUEST: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.e(TAG, "PERMISSIONS_MULTIPLE_REQUEST");
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
-            }
-            case PERMISSIONS_REQUEST_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.e(TAG, "PERMISSIONS_REQUEST_LOCATION");
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
-            }
-
-            case PERMISSIONS_REQUEST_STORAGE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.e(TAG, "PERMISSIONS_REQUEST_STORAGE");
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
-            }
-
-            // other 'case' lines to check for other
-            // permissions this app might request.
-        }
     }
 }

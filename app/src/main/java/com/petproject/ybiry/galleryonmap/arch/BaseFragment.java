@@ -25,7 +25,7 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
     @LayoutRes
     protected abstract int getLayoutId();
 
-    public T getBinding() {
+    protected T getBinding() {
         return mViewDataBinding;
     }
 }

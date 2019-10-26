@@ -4,9 +4,10 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.databinding.ViewDataBinding;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.ViewModel;
 
-public abstract class BaseViewModelActivity<T extends ViewDataBinding, V extends ViewModel> extends BaseActivity<T> {
+public abstract class BaseViewModelActivity<T extends ViewDataBinding, V extends AndroidViewModel> extends BaseActivity<T> {
 
     private V mViewModel;
 

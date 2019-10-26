@@ -1,6 +1,8 @@
 package com.petproject.ybiry.galleryonmap.ui.main;
 
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -11,11 +13,17 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
 import com.petproject.ybiry.galleryonmap.R;
-import com.petproject.ybiry.galleryonmap.arch.BaseActivity;
+import com.petproject.ybiry.galleryonmap.arch.BaseViewModelActivity;
 import com.petproject.ybiry.galleryonmap.databinding.ActivityMainBinding;
 
-public class MainActivity extends BaseActivity<ActivityMainBinding>
+import static com.petproject.ybiry.galleryonmap.data.model.RequestCode.PERMISSIONS_MULTIPLE_REQUEST;
+import static com.petproject.ybiry.galleryonmap.data.model.RequestCode.PERMISSIONS_REQUEST_LOCATION;
+import static com.petproject.ybiry.galleryonmap.data.model.RequestCode.PERMISSIONS_REQUEST_STORAGE;
+
+public class MainActivity extends BaseViewModelActivity<ActivityMainBinding, MainActivityViewModel>
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +45,16 @@ public class MainActivity extends BaseActivity<ActivityMainBinding>
                     .add(R.id.container, new MainFragment(), "main_fragment")
                     .commit();
         }
+    }
+
+    @Override
+    public MainActivityViewModel initViewModel() {
+        return null;
+    }
+
+    @Override
+    public int getBindingVariable() {
+        return 0;
     }
 
     @Override
@@ -100,4 +118,48 @@ public class MainActivity extends BaseActivity<ActivityMainBinding>
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_MULTIPLE_REQUEST: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.e(TAG, "PERMISSIONS_MULTIPLE_REQUEST");
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+            case PERMISSIONS_REQUEST_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.e(TAG, "PERMISSIONS_REQUEST_LOCATION");
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            case PERMISSIONS_REQUEST_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.e(TAG, "PERMISSIONS_REQUEST_STORAGE");
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request.
+        }
+    }
+
 }
