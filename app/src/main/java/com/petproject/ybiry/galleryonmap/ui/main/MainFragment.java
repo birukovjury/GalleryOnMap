@@ -50,32 +50,19 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     private ClusterManager<Photo> mClusterManager;
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
-
-    private void getAsyncMap() {
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
-                .findFragmentById(R.id.map);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
-        }
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getAsyncMap();
         initDependencies();
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         if (mMap == null) {
             getAsyncMap();
         }
     }
+
 
     @Override
     protected int getLayoutId() {
@@ -96,6 +83,13 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         observeNewPhotos();
     }
 
+    private void getAsyncMap() {
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
+                .findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
+    }
 
     private GoogleMap getMap() {
         return mMap;
@@ -270,12 +264,15 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String[] permissions, int[] grantResults) {
+                                           String[] permissions,
+                                           int[] grantResults) {
         switch (requestCode) {
             case PERMISSIONS_MULTIPLE_REQUEST: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.e(TAG, "PERMISSIONS_MULTIPLE_REQUEST");
+                    getViewModel().getInitialData();
+
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
@@ -287,6 +284,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.e(TAG, "PERMISSIONS_REQUEST_LOCATION");
+                    getViewModel().getInitialData();
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
@@ -299,6 +297,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.e(TAG, "PERMISSIONS_REQUEST_STORAGE");
+                    getViewModel().getInitialData();
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.

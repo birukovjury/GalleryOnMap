@@ -32,8 +32,6 @@ import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -76,9 +74,13 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
     private void askViewForPermissions() {
         boolean isStorageGranted = isExternalStorageGranted(getApplication().getApplicationContext());
         boolean isLocationGranted = isLocationGranted(getApplication().getApplicationContext());
-        if (!(isStorageGranted && isLocationGranted)) {
-            requestLocationAndStoragePermissions();
-        } else requestExternalStorageReadPermissions();
+
+        if (isStorageGranted && isLocationGranted) return;
+        if (!isStorageGranted && !isLocationGranted) requestLocationAndStoragePermissions();
+        else {
+            if (!isStorageGranted) requestExternalStorageReadPermissions();
+            if (!isLocationGranted) requestLocationPermissions();
+        }
     }
 
 
