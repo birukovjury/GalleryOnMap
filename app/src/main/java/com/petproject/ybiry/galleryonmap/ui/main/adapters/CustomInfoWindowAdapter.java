@@ -12,11 +12,8 @@ import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.petproject.ybiry.galleryonmap.R;
 import com.petproject.ybiry.galleryonmap.data.model.Photo;
-import com.squareup.picasso.Picasso;
 
 import org.apache.commons.lang3.StringUtils;
-
-import java.io.File;
 
 public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
