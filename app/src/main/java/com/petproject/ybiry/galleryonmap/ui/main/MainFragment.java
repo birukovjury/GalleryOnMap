@@ -61,6 +61,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         if (mMap == null) {
             getAsyncMap();
         }
+
     }
 
 
@@ -84,8 +85,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     }
 
     private void getAsyncMap() {
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
@@ -98,8 +98,6 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
 
     private void initDependencies() {
         getViewModel().init();
-        if (mAdapter == null)
-            mAdapter = new CustomInfoWindowAdapter(getActivity(), mClusterManager);
     }
 
 
@@ -199,6 +197,8 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        if (mAdapter == null)
+            mAdapter = new CustomInfoWindowAdapter(getActivity(), mClusterManager, mMap);
         setUpCluster();
         getViewModel().getInitialData();
     }
