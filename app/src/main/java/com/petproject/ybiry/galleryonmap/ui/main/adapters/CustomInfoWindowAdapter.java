@@ -1,19 +1,15 @@
 package com.petproject.ybiry.galleryonmap.ui.main.adapters;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 import com.google.maps.android.clustering.Cluster;
-import com.google.maps.android.clustering.ClusterManager;
 import com.petproject.ybiry.galleryonmap.R;
 import com.petproject.ybiry.galleryonmap.data.model.Photo;
 import com.petproject.ybiry.galleryonmap.ui.main.layout.MapWrapperLayout;
@@ -24,16 +20,20 @@ import org.apache.commons.lang3.StringUtils;
 public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
     private static final String TAG = "infoWindowAdapter";
-    private static final int MAX_WIDTH = 100;
-    private static final int MAX_HEIGHT = 100;
     private final Activity mContext;
+    private final ViewGroup mInfoWindow;
+    private final OnInfoWindowElemTouchListener mInfoButtonListener;
+    private final MapWrapperLayout mMapWrapperLayout;
     private Cluster<Photo> mCluster;
-    private final GoogleMap mMap;
-    private OnInfoWindowElemTouchListener mInfoButtonListener;
 
-    public CustomInfoWindowAdapter(Activity context, ClusterManager manager, GoogleMap map) {
+    public CustomInfoWindowAdapter(Activity context,
+                                   ViewGroup infoWindow,
+                                   OnInfoWindowElemTouchListener infoButtonListener,
+                                   MapWrapperLayout mapWrapperLayout) {
         mContext = context;
-        mMap = map;
+        mInfoWindow = infoWindow;
+        mInfoButtonListener = infoButtonListener;
+        mMapWrapperLayout = mapWrapperLayout;
     }
 
     public void setCluster(Cluster<Photo> mCluster) {
@@ -47,45 +47,15 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
     @Override
     public View getInfoContents(Marker marker) {
-        View view = mContext.getLayoutInflater().inflate(R.layout.custom_info_window, null);
-        TextView titleTextView = view.findViewById(R.id.tv_title);
-        ImageView img1 = view.findViewById(R.id.pic1);
-        ImageView img2 = view.findViewById(R.id.pic2);
-        ImageView img3 = view.findViewById(R.id.pic3);
-        ImageView img4 = view.findViewById(R.id.pic4);
 
-        MapWrapperLayout mapWrapperLayout = mContext.findViewById(R.id.map_relative_layout);
-        ViewGroup infoWindow = (ViewGroup) mContext.getLayoutInflater().inflate(R.layout.custom_infowindow, null);
+        TextView titleTextView = mInfoWindow.findViewById(R.id.tv_title);
+        ImageView img1 = mInfoWindow.findViewById(R.id.pic1);
+        ImageView img2 = mInfoWindow.findViewById(R.id.pic2);
+        ImageView img3 = mInfoWindow.findViewById(R.id.pic3);
+        ImageView img4 = mInfoWindow.findViewById(R.id.pic4);
 
-        TextView infoTitle = infoWindow.findViewById(R.id.nameTxt);
-        TextView infoSnippet = infoWindow.findViewById(R.id.addressTxt);
-        Button infoButton1 = infoWindow.findViewById(R.id.btnOne);
-        Button infoButton2 = infoWindow.findViewById(R.id.btnTwo);
-
-
-        mInfoButtonListener = new OnInfoWindowElemTouchListener(infoButton1, mContext.getResources().getDrawable(R.drawable.ic_menu_camera), mContext.getResources().getDrawable(R.drawable.ic_menu_camera)) {
-            @Override
-            protected void onClickConfirmed(View v, Marker marker) {
-                // Here we can perform some action triggered after clicking the button
-                Toast.makeText(mContext, "click on button 1", Toast.LENGTH_SHORT).show();
-            }
-
-        };
-
-        infoButton1.setOnTouchListener(mInfoButtonListener);
-
-        mInfoButtonListener = new OnInfoWindowElemTouchListener(infoButton2, mContext.getResources().getDrawable(R.drawable.ic_menu_camera), mContext.getResources().getDrawable(R.drawable.ic_menu_camera)) {
-            @Override
-            protected void onClickConfirmed(View v, Marker marker) {
-                Toast.makeText(mContext.getApplicationContext(), "click on button 2", Toast.LENGTH_LONG).show();
-            }
-        };
-        infoButton2.setOnTouchListener(mInfoButtonListener);
-        mapWrapperLayout.init(mMap, getPixelsFromDp(mContext, 39 + 20));
-
-        infoSnippet.setText(marker.getTitle());
-        infoTitle.setText(marker.getSnippet());
         mInfoButtonListener.setMarker(marker);
+        mMapWrapperLayout.setMarkerWithInfoWindow(marker, mInfoWindow);
 
         setVisibility(false, img1, img2, img3, img4);
         titleTextView.setVisibility(View.GONE);
@@ -139,7 +109,7 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
                 titleTextView.setVisibility(View.VISIBLE);
             }
         }
-        return infoWindow;
+        return mInfoWindow;
     }
 
     private void setVisibility(boolean visible, ImageView... views) {
@@ -150,9 +120,5 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         }
     }
 
-    private static int getPixelsFromDp(Context context, float dp) {
-        final float scale = context.getResources().getDisplayMetrics().density;
-        return (int) (dp * scale + 0.5f);
-    }
 
 }

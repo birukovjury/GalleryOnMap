@@ -15,4 +15,5 @@
     <string name="menu_send">Send</string>
     <string name="preview">Preview</string>
     <string name="cluster_title">Photos there</string>
+    <string name="any_event_on_this_window">Any event</string>
 </resources>

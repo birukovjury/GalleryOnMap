@@ -19,8 +19,8 @@
 
     <ImageView
         android:id="@+id/pic1"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="@dimen/picture_width"
+        android:layout_height="@dimen/picture_height"
         android:contentDescription="@string/preview"
         android:padding="2dp"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -28,8 +28,8 @@
 
     <ImageView
         android:id="@+id/pic2"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="@dimen/picture_width"
+        android:layout_height="@dimen/picture_height"
         android:contentDescription="@string/preview"
         android:padding="2dp"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -38,8 +38,8 @@
 
     <ImageView
         android:id="@+id/pic3"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="@dimen/picture_width"
+        android:layout_height="@dimen/picture_height"
         android:contentDescription="@string/preview"
         android:padding="2dp"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -47,12 +47,29 @@
 
     <ImageView
         android:id="@+id/pic4"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="@dimen/picture_width"
+        android:layout_height="@dimen/picture_height"
         android:contentDescription="@string/preview"
         android:padding="2dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toEndOf="@+id/pic3"
         app:layout_constraintTop_toBottomOf="@+id/pic2" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="pic1,pic2,pic3,pic4" />
+
+    <Button
+        android:id="@+id/anyButton"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="5dp"
+        android:background="@android:color/holo_green_dark"
+        android:text="@string/any_event_on_this_window"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/barrier" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

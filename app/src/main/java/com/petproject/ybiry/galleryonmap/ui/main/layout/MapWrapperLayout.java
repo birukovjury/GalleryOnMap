@@ -14,26 +14,26 @@ public class MapWrapperLayout extends RelativeLayout {
     /**
      * Reference to a GoogleMap object
      */
-    private GoogleMap map;
+    private GoogleMap mMap;
 
     /**
      * Vertical offset in pixels between the bottom edge of our InfoWindow
-     * and the marker position (by default it's bottom edge too).
+     * and the mMarker position (by default it's bottom edge too).
      * It's a good idea to use custom markers and also the InfoWindow frame,
-     * because we probably can't rely on the sizes of the default marker and frame.
+     * because we probably can't rely on the sizes of the default mMarker and frame.
      */
-    private int bottomOffsetPixels;
+    private int mBottomOffsetPixels;
 
     /**
-     * A currently selected marker
+     * A currently selected mMarker
      */
-    private Marker marker;
+    private Marker mMarker;
 
     /**
      * Our custom view which is returned from either the InfoWindowAdapter.getInfoContents
      * or InfoWindowAdapter.getInfoWindow
      */
-    private View infoWindow;
+    private View mInfoWindow;
 
     public MapWrapperLayout(Context context) {
         super(context);
@@ -51,8 +51,8 @@ public class MapWrapperLayout extends RelativeLayout {
      * Must be called before we can route the touch events
      */
     public void init(GoogleMap map, int bottomOffsetPixels) {
-        this.map = map;
-        this.bottomOffsetPixels = bottomOffsetPixels;
+        mMap = map;
+        mBottomOffsetPixels = bottomOffsetPixels;
     }
 
     /**
@@ -60,29 +60,29 @@ public class MapWrapperLayout extends RelativeLayout {
      * or InfoWindowAdapter.getInfoWindow.
      */
     public void setMarkerWithInfoWindow(Marker marker, View infoWindow) {
-        this.marker = marker;
-        this.infoWindow = infoWindow;
+        mMarker = marker;
+        mInfoWindow = infoWindow;
     }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         boolean ret = false;
-        // Make sure that the infoWindow is shown and we have all the needed references
-        if (marker != null && marker.isInfoWindowShown() && map != null && infoWindow != null) {
-            // Get a marker position on the screen
-            Point point = map.getProjection().toScreenLocation(marker.getPosition());
+        // Make sure that the mInfoWindow is shown and we have all the needed references
+        if (mMarker != null && mMarker.isInfoWindowShown() && mMap != null && mInfoWindow != null) {
+            // Get a mMarker position on the screen
+            Point point = mMap.getProjection().toScreenLocation(mMarker.getPosition());
 
             // Make a copy of the MotionEvent and adjust it's location
-            // so it is relative to the infoWindow left top corner
+            // so it is relative to the mInfoWindow left top corner
             MotionEvent copyEv = MotionEvent.obtain(ev);
             copyEv.offsetLocation(
-                    -point.x + (infoWindow.getWidth() / 2),
-                    -point.y + infoWindow.getHeight() + bottomOffsetPixels);
+                    -point.x + (mInfoWindow.getWidth() / 2),
+                    -point.y + mInfoWindow.getHeight() + mBottomOffsetPixels);
 
-            // Dispatch the adjusted MotionEvent to the infoWindow
-            ret = infoWindow.dispatchTouchEvent(copyEv);
+            // Dispatch the adjusted MotionEvent to the mInfoWindow
+            ret = mInfoWindow.dispatchTouchEvent(copyEv);
         }
-        // If the infoWindow consumed the touch event, then just return true.
+        // If the mInfoWindow consumed the touch event, then just return true.
         // Otherwise pass this event to the super class and return it's result
         return ret || super.dispatchTouchEvent(ev);
     }

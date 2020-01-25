@@ -14,8 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Single;
-import io.reactivex.SingleEmitter;
-import io.reactivex.SingleOnSubscribe;
 
 public class RepositoryImpl implements Repository {
 
@@ -29,20 +27,17 @@ public class RepositoryImpl implements Repository {
 
     @Override
     public Single<List<Photo>> getPhotos() {
-        return Single.create(new SingleOnSubscribe<List<Photo>>() {
-            @Override
-            public void subscribe(final SingleEmitter<List<Photo>> emitter) throws Exception {
-                try {
-                    // Thread.sleep(1000);
-                    List<Photo> photos = getImagePaths(mAppContext);
-                    if (photos != null) {
-                        emitter.onSuccess(photos);
-                        Log.e(CLASS_TAG, "Total count of photos =  " + photos.size() + "\n");
+        return Single.create(emitter -> {
+            try {
+                // Thread.sleep(1000);
+                List<Photo> photos = getImagePaths(mAppContext);
+                if (photos != null) {
+                    emitter.onSuccess(photos);
+                    Log.e(CLASS_TAG, "Total count of photos =  " + photos.size() + "\n");
 
-                    } else Log.e(CLASS_TAG, "No photos");
-                } catch (Exception e) {
-                    emitter.onError(e);
-                }
+                } else Log.e(CLASS_TAG, "No photos");
+            } catch (Exception e) {
+                emitter.onError(e);
             }
         });
     }
@@ -61,7 +56,7 @@ public class RepositoryImpl implements Repository {
                 MediaStore.Images.Media.DATE_ADDED + " DESC");
 
         if (cursor != null) {
-            photos = new ArrayList<Photo>(cursor.getCount());
+            photos = new ArrayList<>(cursor.getCount());
             if (cursor.moveToFirst()) {
                 float[] latlng;
                 final int image_path_col = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);

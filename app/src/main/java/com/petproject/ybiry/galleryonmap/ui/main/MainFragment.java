@@ -1,12 +1,16 @@
 package com.petproject.ybiry.galleryonmap.ui.main;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,6 +24,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.petproject.ybiry.galleryonmap.BuildConfig;
@@ -28,6 +33,8 @@ import com.petproject.ybiry.galleryonmap.arch.BaseViewModelFragment;
 import com.petproject.ybiry.galleryonmap.data.model.Photo;
 import com.petproject.ybiry.galleryonmap.databinding.FragmentMainBinding;
 import com.petproject.ybiry.galleryonmap.ui.main.adapters.CustomInfoWindowAdapter;
+import com.petproject.ybiry.galleryonmap.ui.main.layout.MapWrapperLayout;
+import com.petproject.ybiry.galleryonmap.ui.main.listener.OnInfoWindowElemTouchListener;
 
 import java.io.File;
 import java.util.Arrays;
@@ -45,9 +52,20 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         ClusterManager.OnClusterItemInfoWindowClickListener<Photo> {
 
     private static final String TAG = "MainFragment";
+
+    private MapWrapperLayout mMapWrapperLayout;
+    private ViewGroup mInfoWindow;
+    private Button mInfoButton;
+    private OnInfoWindowElemTouchListener mInfoButtonListener;
+
     private GoogleMap mMap;
     private CustomInfoWindowAdapter mAdapter;
     private ClusterManager<Photo> mClusterManager;
+
+    private static int getPixelsFromDp(Context context, float dp) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dp * scale + 0.5f);
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,9 +79,30 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         if (mMap == null) {
             getAsyncMap();
         }
-
+        initViews();
+        initListener(mInfoButton);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
+    private void initListener(Button button) {
+        if (mInfoButtonListener == null)
+            mInfoButtonListener = new OnInfoWindowElemTouchListener(button,
+                    getResources().getDrawable(R.drawable.common_google_signin_btn_icon_dark_normal_background),
+                    getResources().getDrawable(R.drawable.common_google_signin_btn_icon_light_normal_background)) {
+                @Override
+                protected void onClickConfirmed(View v, Marker marker) {
+                    showToast(marker.getSnippet());
+                }
+            };
+
+        button.setOnTouchListener(mInfoButtonListener);
+    }
+
+    private void initViews() {
+        mMapWrapperLayout = getBinding().mapRelativeLayout;
+        mInfoWindow = (ViewGroup) getLayoutInflater().inflate(R.layout.custom_info_window, null);
+        mInfoButton = mInfoWindow.findViewById(R.id.anyButton);
+    }
 
     @Override
     protected int getLayoutId() {
@@ -95,11 +134,9 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         return mMap;
     }
 
-
     private void initDependencies() {
         getViewModel().init();
     }
-
 
     private void observeLoadingState() {
         getViewModel().isLoading().observe(this, isLoading -> {
@@ -121,14 +158,12 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
             mMap.getUiSettings().setAllGesturesEnabled(!state);
     }
 
-
     private void observeForToast() {
         getViewModel().getToast().observe(this, message -> {
             Log.e(TAG, "Toast received: " + message);
             showToast(message);
         });
     }
-
 
     private void observeNewPhotos() {
         getViewModel().getPhotos().observe(this, photos -> {
@@ -140,11 +175,9 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         });
     }
 
-
     private void showToast(String s) {
         Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
     }
-
 
     private void observeForPermissionRequest() {
         getViewModel().getRequestPermissions().observe(this, requiredPermissions -> {
@@ -162,7 +195,6 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         return PERMISSIONS_REQUEST_STORAGE;
     }
 
-
     private void addItems(List<Photo> photos) {
         if (mMap != null) {
             for (int i = 0; i < photos.size(); i++) {
@@ -172,12 +204,10 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         }
     }
 
-
     private void moveToCurrentLocation(LatLng currentLocation) {
         getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 6));
         getMap().animateCamera(CameraUpdateFactory.zoomTo(11), 1000, null);
     }
-
 
     private void zoomCluster(Cluster<Photo> cluster) {
         LatLngBounds.Builder builder = LatLngBounds.builder();
@@ -193,12 +223,15 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         }
     }
 
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMapWrapperLayout.init(mMap, getPixelsFromDp(requireContext(), 39 + 20));
         if (mAdapter == null)
-            mAdapter = new CustomInfoWindowAdapter(getActivity(), mClusterManager, mMap);
+            mAdapter = new CustomInfoWindowAdapter(getActivity(),
+                    mInfoWindow,
+                    mInfoButtonListener,
+                    mMapWrapperLayout);
         setUpCluster();
         getViewModel().getInitialData();
     }

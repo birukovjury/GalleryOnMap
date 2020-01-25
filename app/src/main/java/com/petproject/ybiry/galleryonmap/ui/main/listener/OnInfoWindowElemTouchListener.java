@@ -9,36 +9,43 @@ import android.view.View;
 import com.google.android.gms.maps.model.Marker;
 
 public abstract class OnInfoWindowElemTouchListener implements View.OnTouchListener {
-    private final View view;
-    private final Drawable bgDrawableNormal;
-    private final Drawable bgDrawablePressed;
-    private final Handler handler = new Handler();
+    private final View mView;
+    private final Drawable mBgDrawableNormal;
+    private final Drawable mBgDrawablePressed;
+    private final Handler mHandler = new Handler();
 
-    private Marker marker;
-    private boolean pressed = false;
+    private Marker mMarker;
+    private boolean mPressed = false;
+    private final Runnable mConfirmClickRunnable = new Runnable() {
+        public void run() {
+            if (endPress()) {
+                onClickConfirmed(mView, mMarker);
+            }
+        }
+    };
 
-    public OnInfoWindowElemTouchListener(View view, Drawable bgDrawableNormal, Drawable bgDrawablePressed) {
-        this.view = view;
-        this.bgDrawableNormal = bgDrawableNormal;
-        this.bgDrawablePressed = bgDrawablePressed;
+    protected OnInfoWindowElemTouchListener(View view, Drawable bgDrawableNormal, Drawable bgDrawablePressed) {
+        mView = view;
+        mBgDrawableNormal = bgDrawableNormal;
+        mBgDrawablePressed = bgDrawablePressed;
     }
 
     public void setMarker(Marker marker) {
-        this.marker = marker;
+        mMarker = marker;
     }
 
     @Override
     public boolean onTouch(View vv, MotionEvent event) {
-        if (0 <= event.getX() && event.getX() <= view.getWidth() &&
-                0 <= event.getY() && event.getY() <= view.getHeight()) {
+        if (0 <= event.getX() && event.getX() <= mView.getWidth() &&
+                0 <= event.getY() && event.getY() <= mView.getHeight()) {
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
                     startPress();
                     break;
 
-                // We need to delay releasing of the view a little so it shows the pressed state on the screen
+                // We need to delay releasing of the mView a little so it shows the mPressed state on the screen
                 case MotionEvent.ACTION_UP:
-                    handler.postDelayed(confirmClickRunnable, 150);
+                    mHandler.postDelayed(mConfirmClickRunnable, 150);
                     break;
 
                 case MotionEvent.ACTION_CANCEL:
@@ -48,8 +55,8 @@ public abstract class OnInfoWindowElemTouchListener implements View.OnTouchListe
                     break;
             }
         } else {
-            // If the touch goes outside of the view's area
-            // (like when moving finger out of the pressed button)
+            // If the touch goes outside of the mView's area
+            // (like when moving finger out of the mPressed button)
             // just release the press
             endPress();
         }
@@ -57,34 +64,26 @@ public abstract class OnInfoWindowElemTouchListener implements View.OnTouchListe
     }
 
     private void startPress() {
-        if (!pressed) {
-            pressed = true;
-            handler.removeCallbacks(confirmClickRunnable);
-            view.setBackground(bgDrawablePressed);
-            if (marker != null)
-                marker.showInfoWindow();
+        if (!mPressed) {
+            mPressed = true;
+            mHandler.removeCallbacks(mConfirmClickRunnable);
+            mView.setBackground(mBgDrawablePressed);
+            if (mMarker != null)
+                mMarker.showInfoWindow();
         }
     }
 
     private boolean endPress() {
-        if (pressed) {
-            this.pressed = false;
-            handler.removeCallbacks(confirmClickRunnable);
-            view.setBackground(bgDrawableNormal);
-            if (marker != null)
-                marker.showInfoWindow();
+        if (mPressed) {
+            mPressed = false;
+            mHandler.removeCallbacks(mConfirmClickRunnable);
+            mView.setBackground(mBgDrawableNormal);
+            if (mMarker != null)
+                mMarker.showInfoWindow();
             return true;
         } else
             return false;
     }
-
-    private final Runnable confirmClickRunnable = new Runnable() {
-        public void run() {
-            if (endPress()) {
-                onClickConfirmed(view, marker);
-            }
-        }
-    };
 
     /**
      * This is called after a successful click

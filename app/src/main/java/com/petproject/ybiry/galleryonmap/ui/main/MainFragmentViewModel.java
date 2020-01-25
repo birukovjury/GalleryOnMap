@@ -59,7 +59,7 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
             mToastLiveData = new MutableLiveData<>();
 
         if (mRequestPermissionLiveData == null)
-            mRequestPermissionLiveData = new MutableLiveData<String[]>();
+            mRequestPermissionLiveData = new MutableLiveData<>();
 
         if (mRepo == null)
             mRepo = new RepositoryImpl(getApplication().getApplicationContext());

@@ -1,13 +1,13 @@
 package com.petproject.ybiry.galleryonmap.arch;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A lifecycle-aware observable that sends only new updates after subscription, used for events like
@@ -26,12 +26,9 @@ public class SingleLiveEvent<T> extends MutableLiveData<T> {
     @MainThread
     @Override
     public void observe(@NonNull LifecycleOwner owner, @NonNull final Observer<? super T> observer) {
-        super.observe(owner, new Observer<T>() {
-            @Override
-            public void onChanged(T t) {
-                if (mPending.compareAndSet(true, false)) {
-                    observer.onChanged(t);
-                }
+        super.observe(owner, t -> {
+            if (mPending.compareAndSet(true, false)) {
+                observer.onChanged(t);
             }
         });
     }
