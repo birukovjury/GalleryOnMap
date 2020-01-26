@@ -19,11 +19,11 @@ public abstract class BaseViewModel extends AndroidViewModel {
         return mIsLoading;
     }
 
-    public void setLoading(boolean isLoading) {
+    protected void setLoading(boolean isLoading) {
         mIsLoading.setValue(isLoading);
     }
 
-    public void postLoading(boolean isLoading) {
+    protected void postLoading(boolean isLoading) {
         mIsLoading.postValue(isLoading);
     }
 

@@ -1,6 +1,5 @@
 package com.petproject.ybiry.galleryonmap.ui.main;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -36,13 +35,11 @@ import com.petproject.ybiry.galleryonmap.ui.main.adapters.CustomInfoWindowAdapte
 import com.petproject.ybiry.galleryonmap.ui.main.layout.MapWrapperLayout;
 import com.petproject.ybiry.galleryonmap.ui.main.listener.OnInfoWindowElemTouchListener;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-
-import static com.petproject.ybiry.galleryonmap.data.model.RequestCode.PERMISSIONS_MULTIPLE_REQUEST;
-import static com.petproject.ybiry.galleryonmap.data.model.RequestCode.PERMISSIONS_REQUEST_LOCATION;
-import static com.petproject.ybiry.galleryonmap.data.model.RequestCode.PERMISSIONS_REQUEST_STORAGE;
 
 public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, MainFragmentViewModel>
         implements OnMapReadyCallback,
@@ -52,6 +49,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         ClusterManager.OnClusterItemInfoWindowClickListener<Photo> {
 
     private static final String TAG = "MainFragment";
+    private static final int PERMISSIONS_REQUEST_STORAGE = 100;
 
     private MapWrapperLayout mMapWrapperLayout;
     private ViewGroup mInfoWindow;
@@ -94,10 +92,10 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
                     showToast(marker.getSnippet());
                 }
             };
-
         button.setOnTouchListener(mInfoButtonListener);
     }
 
+    @SuppressLint("InflateParams")
     private void initViews() {
         mMapWrapperLayout = getBinding().mapRelativeLayout;
         mInfoWindow = (ViewGroup) getLayoutInflater().inflate(R.layout.custom_info_window, null);
@@ -162,17 +160,9 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
 
     private void requestPermissions(String[] requiredPermissions) {
         Log.e(TAG, "Permission request received: " + Arrays.toString(requiredPermissions));
-        int requestCode = getPermissionRequestCode(requiredPermissions);
-        requestPermissions(requiredPermissions, requestCode);
+        requestPermissions(requiredPermissions, PERMISSIONS_REQUEST_STORAGE);
     }
 
-    private int getPermissionRequestCode(String[] requiredPermissions) {
-        if (requiredPermissions.length > 1)
-            return PERMISSIONS_MULTIPLE_REQUEST;
-        else if (Manifest.permission.ACCESS_FINE_LOCATION.equals(requiredPermissions[0]))
-            return PERMISSIONS_REQUEST_LOCATION;
-        return PERMISSIONS_REQUEST_STORAGE;
-    }
 
     private void addItems(List<Photo> photos) {
         if (mMap != null) {
@@ -276,49 +266,14 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String[] permissions,
-                                           int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSIONS_MULTIPLE_REQUEST: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.e(TAG, "PERMISSIONS_MULTIPLE_REQUEST");
-                    getViewModel().getInitialData();
-
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
+                                           @NotNull String[] permissions,
+                                           @NotNull int[] grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST_STORAGE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.e(TAG, "PERMISSIONS_REQUEST_STORAGE");
+                getViewModel().getInitialData();
             }
-            case PERMISSIONS_REQUEST_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.e(TAG, "PERMISSIONS_REQUEST_LOCATION");
-                    getViewModel().getInitialData();
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
-            }
-
-            case PERMISSIONS_REQUEST_STORAGE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.e(TAG, "PERMISSIONS_REQUEST_STORAGE");
-                    getViewModel().getInitialData();
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
-            }
-
-            // other 'case' lines to check for other
-            // permissions this app might request.
         }
     }
 }

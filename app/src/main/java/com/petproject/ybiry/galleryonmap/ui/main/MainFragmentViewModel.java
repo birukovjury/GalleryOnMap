@@ -55,15 +55,8 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
     }
 
     private void askViewForPermissions() {
-        boolean isStorageGranted = isExternalStorageGranted(getApplication().getApplicationContext());
-        boolean isLocationGranted = isLocationGranted(getApplication().getApplicationContext());
-
-        if (isStorageGranted && isLocationGranted) return;
-        if (!isStorageGranted && !isLocationGranted) requestLocationAndStoragePermissions();
-        else {
-            if (!isStorageGranted) requestExternalStorageReadPermissions();
-            if (!isLocationGranted) requestLocationPermissions();
-        }
+        if (!isExternalStorageGranted(getApplication().getApplicationContext()))
+            requestExternalStorageReadPermissions();
     }
 
 
@@ -92,26 +85,11 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
     }
 
 
-    private void requestLocationPermissions() {
-        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION};
-        mRequestPermissionLiveData.postValue(permissions);
-    }
-
     private void requestExternalStorageReadPermissions() {
         String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
         mRequestPermissionLiveData.postValue(permissions);
     }
 
-    private void requestLocationAndStoragePermissions() {
-        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE};
-        mRequestPermissionLiveData.setValue(permissions);
-    }
-
-    private boolean isLocationGranted(Context context) {
-        return ContextCompat.checkSelfPermission(context,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED;
-    }
 
     private boolean isExternalStorageGranted(Context context) {
         return ContextCompat.checkSelfPermission(context,
@@ -123,7 +101,6 @@ public class MainFragmentViewModel extends BaseViewModel implements LifecycleObs
     LiveData<List<Photo>> getPhotos() {
         return mListOfPhotosLiveData;
     }
-
 
     LiveData<String> getToast() {
         return mToastLiveData;
