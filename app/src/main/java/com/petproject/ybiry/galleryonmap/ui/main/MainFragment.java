@@ -116,11 +116,10 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
 
     @Override
     protected void setSubscribers() {
-        getLifecycle().addObserver(getViewModel());
-        observeForPermissionRequest();
-        observeLoadingState();
-        observeForToast();
-        observeNewPhotos();
+        getViewModel().getRequestPermissions().observe(getViewLifecycleOwner(), this::requestPermissions);
+        getViewModel().getPhotos().observe(getViewLifecycleOwner(), this::receiveNewPhotos);
+        getViewModel().isLoading().observe(getViewLifecycleOwner(), this::setLoadingState);
+        getViewModel().getToast().observe(getViewLifecycleOwner(), this::showToast);
     }
 
     private void getAsyncMap() {
@@ -134,12 +133,6 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
         return mMap;
     }
 
-    private void observeLoadingState() {
-        getViewModel().isLoading().observe(this, isLoading -> {
-            Log.e(TAG, "Progress state received: " + isLoading);
-            setLoadingState(isLoading);
-        });
-    }
 
     private void setLoadingState(boolean state) {
         if (state) {
@@ -154,33 +147,23 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
             mMap.getUiSettings().setAllGesturesEnabled(!state);
     }
 
-    private void observeForToast() {
-        getViewModel().getToast().observe(this, message -> {
-            Log.e(TAG, "Toast received: " + message);
-            showToast(message);
-        });
-    }
 
-    private void observeNewPhotos() {
-        getViewModel().getPhotos().observe(this, photos -> {
-            Log.e(TAG, "New photo received");
-            if (photos != null && !photos.isEmpty()) addItems(photos);
-            else {
-                showToast("Photos with location haven't found");
-            }
-        });
+    private void receiveNewPhotos(List<Photo> photos) {
+        Log.e(TAG, "New photo received");
+        if (photos != null && !photos.isEmpty()) addItems(photos);
+        else {
+            showToast("Photos with location haven't found");
+        }
     }
 
     private void showToast(String s) {
         Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
     }
 
-    private void observeForPermissionRequest() {
-        getViewModel().getRequestPermissions().observe(this, requiredPermissions -> {
-            Log.e(TAG, "Permission request received: " + Arrays.toString(requiredPermissions));
-            int requestCode = getPermissionRequestCode(requiredPermissions);
-            requestPermissions(requiredPermissions, requestCode);
-        });
+    private void requestPermissions(String[] requiredPermissions) {
+        Log.e(TAG, "Permission request received: " + Arrays.toString(requiredPermissions));
+        int requestCode = getPermissionRequestCode(requiredPermissions);
+        requestPermissions(requiredPermissions, requestCode);
     }
 
     private int getPermissionRequestCode(String[] requiredPermissions) {
