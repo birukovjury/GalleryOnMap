@@ -70,7 +70,7 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initDependencies();
+        getViewModel().init();
     }
 
     @Override
@@ -132,10 +132,6 @@ public class MainFragment extends BaseViewModelFragment<FragmentMainBinding, Mai
 
     private GoogleMap getMap() {
         return mMap;
-    }
-
-    private void initDependencies() {
-        getViewModel().init();
     }
 
     private void observeLoadingState() {
