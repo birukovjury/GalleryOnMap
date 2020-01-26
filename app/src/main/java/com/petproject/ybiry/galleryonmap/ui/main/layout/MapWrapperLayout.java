@@ -5,12 +5,13 @@ import android.graphics.Point;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.RelativeLayout;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 
-public class MapWrapperLayout extends RelativeLayout {
+public class MapWrapperLayout extends ConstraintLayout {
     /**
      * Reference to a GoogleMap object
      */
